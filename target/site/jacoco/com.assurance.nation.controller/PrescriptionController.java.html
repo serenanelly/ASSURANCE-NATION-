@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.controller</a> &gt; <span class="el_source">PrescriptionController.java</span></div><h1>PrescriptionController.java</h1><pre class="source lang-java linenums">package com.assurance.nation.controller;
+
+import com.assurance.nation.dto.PrescriptionDTO;
+import com.assurance.nation.service.PrescriptionService;
+import com.assurance.nation.util.Constants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+@Tag(name = &quot;Prescriptions&quot;, description = &quot;Ordonnances et prescriptions de consultation&quot;)
+@SecurityRequirement(name = &quot;bearerAuth&quot;)
+public class PrescriptionController {
+
+    private final PrescriptionService prescriptionService;
+
+    @PostMapping(Constants.API_V1 + &quot;/consultations/{id}/prescriptions&quot;)
+    @PreAuthorize(&quot;hasRole('MEDECIN')&quot;)
+    @Operation(summary = &quot;Ajouter une prescription à une consultation&quot;)
+    public ResponseEntity&lt;PrescriptionDTO.Response&gt; create(
+            @PathVariable(&quot;id&quot;) UUID consultationId,
+            @Valid @RequestBody PrescriptionDTO.CreateRequest request,
+            HttpServletRequest httpRequest) {
+<span class="nc" id="L35">        return ResponseEntity.status(HttpStatus.CREATED)</span>
+<span class="nc" id="L36">                .body(prescriptionService.create(consultationId, request, httpRequest.getRemoteAddr()));</span>
+    }
+
+    @GetMapping(Constants.API_V1 + &quot;/consultations/{id}/prescriptions&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','MEDECIN','ASSUREUR','PATIENT')&quot;)
+    @Operation(summary = &quot;Lister les prescriptions d'une consultation&quot;)
+    public ResponseEntity&lt;List&lt;PrescriptionDTO.Response&gt;&gt; listByConsultation(@PathVariable(&quot;id&quot;) UUID consultationId) {
+<span class="nc" id="L43">        return ResponseEntity.ok(prescriptionService.findByConsultationId(consultationId));</span>
+    }
+
+    @GetMapping(Constants.API_V1 + &quot;/prescriptions&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','MEDECIN','ASSUREUR','PATIENT')&quot;)
+    @Operation(summary = &quot;Lister les prescriptions&quot;)
+    public ResponseEntity&lt;List&lt;PrescriptionDTO.Response&gt;&gt; list(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;20&quot;) int size) {
+<span class="nc" id="L52">        return ResponseEntity.ok(prescriptionService.findAll(page, size));</span>
+    }
+
+    @GetMapping(Constants.API_V1 + &quot;/prescriptions/{id}&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','MEDECIN','ASSUREUR','PATIENT')&quot;)
+    @Operation(summary = &quot;Détails d'une prescription&quot;)
+    public ResponseEntity&lt;PrescriptionDTO.Response&gt; get(@PathVariable UUID id) {
+<span class="nc" id="L59">        return ResponseEntity.ok(prescriptionService.findById(id));</span>
+    }
+
+    @DeleteMapping(Constants.API_V1 + &quot;/prescriptions/{id}&quot;)
+    @PreAuthorize(&quot;hasRole('MEDECIN')&quot;)
+    @Operation(summary = &quot;Supprimer logiquement une prescription&quot;)
+    public ResponseEntity&lt;Void&gt; delete(
+            @PathVariable UUID id,
+            @RequestBody(required = false) PrescriptionDTO.DeleteRequest body,
+            HttpServletRequest httpRequest) {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        String motif = body != null ? body.getMotifSuppression() : null;</span>
+<span class="nc" id="L70">        prescriptionService.delete(id, motif, httpRequest.getRemoteAddr());</span>
+<span class="nc" id="L71">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,2 @@
+-- Données de démonstration (exécution manuelle après migration)
+-- Admin: admin@assurance-nation.local / admin123

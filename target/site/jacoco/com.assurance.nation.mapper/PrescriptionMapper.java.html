@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.mapper</a> &gt; <span class="el_source">PrescriptionMapper.java</span></div><h1>PrescriptionMapper.java</h1><pre class="source lang-java linenums">package com.assurance.nation.mapper;
+
+import com.assurance.nation.dto.PrescriptionDTO;
+import com.assurance.nation.entity.Prescription;
+import com.assurance.nation.entity.PrescriptionConsultation;
+import com.assurance.nation.entity.PrescriptionMedicament;
+import org.springframework.stereotype.Component;
+
+@Component
+<span class="fc" id="L10">public class PrescriptionMapper {</span>
+
+    public PrescriptionDTO.Response toResponse(Prescription p) {
+<span class="nc" id="L13">        PrescriptionDTO.Response dto = new PrescriptionDTO.Response();</span>
+<span class="nc" id="L14">        dto.setId(p.getId());</span>
+<span class="nc" id="L15">        dto.setConsultationId(p.getConsultation().getId());</span>
+<span class="nc" id="L16">        dto.setType(p.getType());</span>
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        if (p instanceof PrescriptionMedicament pm) {</span>
+<span class="nc" id="L18">            dto.setMedicament(pm.getMedicament());</span>
+<span class="nc" id="L19">            dto.setPosologie(pm.getPosologie());</span>
+<span class="nc" id="L20">            dto.setDuree(pm.getDuree());</span>
+<span class="nc" id="L21">            dto.setNotes(pm.getNotes());</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        } else if (p instanceof PrescriptionConsultation pc) {</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">            if (pc.getMedecinSpecialiste() != null) {</span>
+<span class="nc" id="L24">                dto.setMedecinSpecialisteId(pc.getMedecinSpecialiste().getId());</span>
+            }
+<span class="nc" id="L26">            dto.setMotif(pc.getMotif());</span>
+<span class="nc" id="L27">            dto.setPriorite(pc.getPriorite());</span>
+<span class="nc" id="L28">            dto.setCodeReference(pc.getCodeReference());</span>
+        }
+<span class="nc" id="L30">        return dto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: assurance-nation
+  profiles:
+    # local = H2 (défaut, sans PostgreSQL). Pour PostgreSQL : SPRING_PROFILES_ACTIVE=dev
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:AssuranceNationSecretKeyForJWTSigningMustBeAtLeast256BitsLong2026!}
+    access-expiration-ms: 900000
+    refresh-expiration-ms: 604800000
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+  bcrypt:
+    strength: 12
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  info:
+    title: ASSURANCE NATION API
+    description: Plateforme de gestion des consultations et remboursements
+    version: 1.0.0
+
+logging:
+  level:
+    com.assurance.nation: INFO
+    org.springframework.security: WARN
+  file:
+    name: ${LOG_FILE:./logs/assurance-nation.log}

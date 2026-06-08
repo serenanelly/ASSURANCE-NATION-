@@ -1,0 +1,15 @@
+package com.assurance.nation.config;
+
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.mockito.Mockito;
+
+@TestConfiguration
+public class TestSecurityConfig {
+
+    @Bean
+    public JavaMailSender javaMailSender() {
+        return Mockito.mock(JavaMailSender.class);
+    }
+}

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+
+import com.assurance.nation.config.JwtTokenProvider;
+import com.assurance.nation.dto.AuthDTO;
+import com.assurance.nation.entity.*;
+import com.assurance.nation.entity.enums.RoleName;
+import com.assurance.nation.entity.enums.UserType;
+import com.assurance.nation.exception.DuplicateResourceException;
+import com.assurance.nation.util.ValidationUtil;
+import com.assurance.nation.exception.UnauthorizedException;
+import com.assurance.nation.exception.ValidationException;
+import com.assurance.nation.mapper.UserMapper;
+import com.assurance.nation.repository.RefreshTokenRepository;
+import com.assurance.nation.repository.RoleRepository;
+import com.assurance.nation.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+@Service
+<span class="fc" id="L25">@RequiredArgsConstructor</span>
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
+    private final MedecinService medecinService;
+    private final AssureService assureService;
+    private final AuditService auditService;
+    private final RoleAssignmentService roleAssignmentService;
+
+    @Transactional
+    public AuthDTO.AuthResponse register(AuthDTO.RegisterRequest request, String ip) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (userRepository.existsByEmail(request.getEmail())) {</span>
+<span class="nc" id="L42">            throw new DuplicateResourceException(&quot;Email déjà utilisé&quot;);</span>
+        }
+<span class="fc" id="L44">        ValidationUtil.validatePasswordMatch(request.getPassword(), request.getConfirmPassword());</span>
+<span class="pc bpc" id="L45" title="2 of 3 branches missed.">        User user = switch (request.getUserType()) {</span>
+<span class="nc" id="L46">            case MEDECIN -&gt; medecinService.createFromRegister(request);</span>
+<span class="fc" id="L47">            case ASSURE -&gt; assureService.createFromRegister(request);</span>
+<span class="pc" id="L48">            case ASSUREUR -&gt; createAssureur(request);</span>
+        };
+<span class="fc" id="L50">        user = userRepository.save(user);</span>
+<span class="fc" id="L51">        auditService.log(&quot;User&quot;, user.getId().toString(), com.assurance.nation.entity.enums.AuditAction.CREATE,</span>
+<span class="fc" id="L52">                null, null, userMapper.toResponse(user), ip);</span>
+<span class="fc" id="L53">        return buildAuthResponse(user, &quot;Inscription réussie&quot;);</span>
+    }
+
+    private Assureur createAssureur(AuthDTO.RegisterRequest request) {
+<span class="nc" id="L57">        Assureur assureur = new Assureur();</span>
+<span class="nc" id="L58">        fillUser(assureur, request);</span>
+<span class="nc" id="L59">        roleAssignmentService.assignRole(assureur, RoleName.ASSUREUR);</span>
+<span class="nc" id="L60">        return assureur;</span>
+    }
+
+    private void fillUser(User user, AuthDTO.RegisterRequest request) {
+<span class="nc" id="L64">        user.setEmail(request.getEmail());</span>
+<span class="nc" id="L65">        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));</span>
+<span class="nc" id="L66">        user.setNom(request.getNom());</span>
+<span class="nc" id="L67">        user.setPrenom(request.getPrenom());</span>
+<span class="nc" id="L68">        user.setDateNaissance(request.getDateNaissance());</span>
+<span class="nc" id="L69">        user.setLieuNaissance(request.getLieuNaissance());</span>
+<span class="nc" id="L70">        user.setAdresse(request.getAdresse());</span>
+<span class="nc" id="L71">        user.setTelephone(request.getTelephone());</span>
+<span class="nc" id="L72">        user.setSexe(request.getSexe());</span>
+<span class="nc" id="L73">        user.setUserType(request.getUserType());</span>
+<span class="nc" id="L74">    }</span>
+
+    @Transactional
+    public AuthDTO.AuthResponse login(AuthDTO.LoginRequest request) {
+        try {
+<span class="fc" id="L79">            authenticationManager.authenticate(</span>
+<span class="fc" id="L80">                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));</span>
+<span class="nc" id="L81">        } catch (Exception e) {</span>
+<span class="nc" id="L82">            throw new UnauthorizedException(&quot;Identifiants invalides&quot;);</span>
+<span class="fc" id="L83">        }</span>
+<span class="fc" id="L84">        User user = userRepository.findByEmail(request.getEmail())</span>
+<span class="pc" id="L85">                .orElseThrow(() -&gt; new UnauthorizedException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="fc" id="L86">        return buildAuthResponse(user, &quot;Connexion réussie&quot;);</span>
+    }
+
+    @Transactional
+    public AuthDTO.TokenResponse refresh(AuthDTO.RefreshRequest request) {
+<span class="fc" id="L91">        RefreshToken stored = refreshTokenRepository.findByToken(request.getRefreshToken())</span>
+<span class="pc" id="L92">                .orElseThrow(() -&gt; new UnauthorizedException(&quot;Refresh token invalide&quot;));</span>
+<span class="pc bpc" id="L93" title="2 of 4 branches missed.">        if (stored.isRevoked() || stored.getExpiryDate().isBefore(Instant.now())) {</span>
+<span class="nc" id="L94">            throw new UnauthorizedException(&quot;Refresh token expiré ou révoqué&quot;);</span>
+        }
+<span class="fc" id="L96">        User user = stored.getUser();</span>
+<span class="fc" id="L97">        String access = jwtTokenProvider.generateAccessToken(user);</span>
+<span class="fc" id="L98">        AuthDTO.TokenResponse response = new AuthDTO.TokenResponse();</span>
+<span class="fc" id="L99">        response.setAccessToken(access);</span>
+<span class="fc" id="L100">        response.setRefreshToken(stored.getToken());</span>
+<span class="fc" id="L101">        response.setExpiresIn(jwtTokenProvider.getAccessExpirationMs() / 1000);</span>
+<span class="fc" id="L102">        return response;</span>
+    }
+
+    @Transactional(readOnly = true)
+    public AuthDTO.ValidateTokenResponse validateToken(String token) {
+<span class="fc" id="L107">        AuthDTO.ValidateTokenResponse response = new AuthDTO.ValidateTokenResponse();</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (!jwtTokenProvider.validateToken(token)) {</span>
+<span class="fc" id="L109">            response.setValid(false);</span>
+<span class="fc" id="L110">            response.setMessage(&quot;Token invalide ou expiré&quot;);</span>
+<span class="fc" id="L111">            return response;</span>
+        }
+        try {
+<span class="fc" id="L114">            String email = jwtTokenProvider.parseClaims(token).get(&quot;email&quot;, String.class);</span>
+<span class="fc" id="L115">            response.setValid(true);</span>
+<span class="fc" id="L116">            response.setEmail(email);</span>
+<span class="fc" id="L117">            response.setMessage(&quot;Token valide&quot;);</span>
+<span class="nc" id="L118">        } catch (Exception e) {</span>
+<span class="nc" id="L119">            response.setValid(false);</span>
+<span class="nc" id="L120">            response.setMessage(&quot;Token invalide&quot;);</span>
+<span class="fc" id="L121">        }</span>
+<span class="fc" id="L122">        return response;</span>
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+<span class="fc" id="L127">        refreshTokenRepository.findByToken(refreshToken).ifPresent(token -&gt; {</span>
+<span class="fc" id="L128">            token.setRevoked(true);</span>
+<span class="fc" id="L129">            refreshTokenRepository.save(token);</span>
+<span class="fc" id="L130">        });</span>
+<span class="fc" id="L131">    }</span>
+
+    private AuthDTO.AuthResponse buildAuthResponse(User user, String message) {
+<span class="fc" id="L134">        refreshTokenRepository.deleteByUserId(user.getId());</span>
+<span class="fc" id="L135">        String access = jwtTokenProvider.generateAccessToken(user);</span>
+<span class="fc" id="L136">        String refreshValue = jwtTokenProvider.generateRefreshTokenValue();</span>
+<span class="fc" id="L137">        RefreshToken refresh = RefreshToken.builder()</span>
+<span class="fc" id="L138">                .token(refreshValue)</span>
+<span class="fc" id="L139">                .user(user)</span>
+<span class="fc" id="L140">                .expiryDate(Instant.now().plusMillis(jwtTokenProvider.getRefreshExpirationMs()))</span>
+<span class="fc" id="L141">                .revoked(false)</span>
+<span class="fc" id="L142">                .build();</span>
+<span class="fc" id="L143">        refreshTokenRepository.save(refresh);</span>
+<span class="fc" id="L144">        AuthDTO.AuthResponse response = new AuthDTO.AuthResponse();</span>
+<span class="fc" id="L145">        response.setAccessToken(access);</span>
+<span class="fc" id="L146">        response.setRefreshToken(refreshValue);</span>
+<span class="fc" id="L147">        response.setExpiresIn(jwtTokenProvider.getAccessExpirationMs() / 1000);</span>
+<span class="fc" id="L148">        response.setUser(userMapper.toResponse(user));</span>
+<span class="fc" id="L149">        response.setMessage(message);</span>
+<span class="fc" id="L150">        return response;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

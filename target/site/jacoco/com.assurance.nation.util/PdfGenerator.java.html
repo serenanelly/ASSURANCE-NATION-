@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PdfGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.util</a> &gt; <span class="el_source">PdfGenerator.java</span></div><h1>PdfGenerator.java</h1><pre class="source lang-java linenums">package com.assurance.nation.util;
+
+import com.assurance.nation.entity.Reimbursement;
+import com.lowagie.text.Document;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.PdfWriter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/**
+ * Génère un justificatif PDF pour les remboursements (OpenPDF).
+ */
+@Component
+<span class="fc" id="L21">public class PdfGenerator {</span>
+
+    @Value(&quot;${app.pdf.output-dir:./data/justificatifs}&quot;)
+    private String outputDir;
+
+    public String generateJustificatif(Reimbursement reimbursement) throws IOException {
+<span class="fc" id="L27">        Path dir = Paths.get(outputDir);</span>
+<span class="fc" id="L28">        Files.createDirectories(dir);</span>
+<span class="fc" id="L29">        String fileName = reimbursement.getNumRemboursement() + &quot;.pdf&quot;;</span>
+<span class="fc" id="L30">        Path file = dir.resolve(fileName);</span>
+
+<span class="fc" id="L32">        Document document = new Document();</span>
+        try {
+<span class="fc" id="L34">            PdfWriter.getInstance(document, Files.newOutputStream(file));</span>
+<span class="fc" id="L35">            document.open();</span>
+<span class="fc" id="L36">            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);</span>
+<span class="fc" id="L37">            Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);</span>
+<span class="fc" id="L38">            document.add(new Paragraph(&quot;ASSURANCE NATION&quot;, titleFont));</span>
+<span class="fc" id="L39">            document.add(new Paragraph(&quot;Justificatif de remboursement&quot;, bodyFont));</span>
+<span class="fc" id="L40">            document.add(new Paragraph(&quot; &quot;));</span>
+<span class="fc" id="L41">            document.add(new Paragraph(&quot;Numéro : &quot; + reimbursement.getNumRemboursement(), bodyFont));</span>
+<span class="fc" id="L42">            document.add(new Paragraph(&quot;Montant total : &quot; + reimbursement.getMontantTotal() + &quot; €&quot;, bodyFont));</span>
+<span class="fc" id="L43">            document.add(new Paragraph(&quot;Taux : &quot; + reimbursement.getTauxRemboursement() + &quot; %&quot;, bodyFont));</span>
+<span class="fc" id="L44">            document.add(new Paragraph(&quot;Montant remboursé : &quot; + reimbursement.getMontantRembourse() + &quot; €&quot;, bodyFont));</span>
+<span class="fc" id="L45">            document.add(new Paragraph(&quot;Statut : &quot; + reimbursement.getStatus(), bodyFont));</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (reimbursement.getModePaiement() != null) {</span>
+<span class="nc" id="L47">                document.add(new Paragraph(&quot;Mode de paiement : &quot; + reimbursement.getModePaiement(), bodyFont));</span>
+            }
+        } finally {
+<span class="fc" id="L50">            document.close();</span>
+        }
+<span class="fc" id="L52">        return file.toAbsolutePath().toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

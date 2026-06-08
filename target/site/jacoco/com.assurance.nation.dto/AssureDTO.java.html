@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssureDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.dto</a> &gt; <span class="el_source">AssureDTO.java</span></div><h1>AssureDTO.java</h1><pre class="source lang-java linenums">package com.assurance.nation.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.time.LocalDate;
+import java.util.UUID;
+
+public class AssureDTO {
+
+    private AssureDTO() {}
+
+<span class="pc bnc" id="L14" title="All 70 branches missed.">    @Data</span>
+    public static class RegisterAssureRequest {
+<span class="fc" id="L16">        @NotBlank private String email;</span>
+<span class="fc" id="L17">        @NotBlank private String password;</span>
+<span class="fc" id="L18">        @NotBlank private String nom;</span>
+<span class="fc" id="L19">        @NotBlank private String prenom;</span>
+<span class="fc" id="L20">        @NotBlank private String numSecuriteSociale;</span>
+<span class="fc" id="L21">        private LocalDate dateAffiliation;</span>
+<span class="fc" id="L22">        private String emploi;</span>
+<span class="fc" id="L23">        private UUID medecinTraitantId;</span>
+    }
+
+<span class="pc bnc" id="L26" title="All 38 branches missed.">    @Data</span>
+    public static class UpdateAssureRequest {
+<span class="fc" id="L28">        private String nom;</span>
+<span class="fc" id="L29">        private String prenom;</span>
+<span class="fc" id="L30">        private String emploi;</span>
+<span class="fc" id="L31">        private Boolean estActif;</span>
+    }
+
+<span class="pc bnc" id="L34" title="All 74 branches missed.">    @Data</span>
+    public static class AssureResponse {
+<span class="nc" id="L36">        private UUID id;</span>
+<span class="nc" id="L37">        private String email;</span>
+<span class="fc" id="L38">        private String nom;</span>
+<span class="nc" id="L39">        private String prenom;</span>
+<span class="fc" id="L40">        private String numSecuriteSociale;</span>
+<span class="nc" id="L41">        private LocalDate dateAffiliation;</span>
+<span class="nc" id="L42">        private String emploi;</span>
+<span class="nc" id="L43">        private UUID medecinTraitantId;</span>
+<span class="nc" id="L44">        private boolean estActif;</span>
+    }
+
+<span class="pc bnc" id="L47" title="All 14 branches missed.">    @Data</span>
+    public static class UpdateMedecinTraitantRequest {
+        @NotNull
+<span class="fc" id="L50">        private UUID medecinTraitantId;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValidationUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.util</a> &gt; <span class="el_source">ValidationUtil.java</span></div><h1>ValidationUtil.java</h1><pre class="source lang-java linenums">package com.assurance.nation.util;
+
+import com.assurance.nation.entity.Medecin;
+import com.assurance.nation.entity.enums.Specialite;
+import com.assurance.nation.exception.ValidationException;
+
+import java.util.regex.Pattern;
+
+public final class ValidationUtil {
+
+<span class="fc" id="L11">    private static final Pattern RPPS_PATTERN = Pattern.compile(&quot;^\\d{11}$&quot;);</span>
+<span class="fc" id="L12">    private static final Pattern NSS_PATTERN = Pattern.compile(&quot;^\\d{15}$&quot;);</span>
+
+    private ValidationUtil() {}
+
+    public static void requireTrue(boolean condition, String message) {
+<span class="nc bnc" id="L17" title="All 2 branches missed.">        if (!condition) {</span>
+<span class="nc" id="L18">            throw new ValidationException(message);</span>
+        }
+<span class="nc" id="L20">    }</span>
+
+    public static void validateRPPS(String numeroRPPS) {
+<span class="pc bpc" id="L23" title="1 of 4 branches missed.">        if (numeroRPPS == null || !RPPS_PATTERN.matcher(numeroRPPS).matches()) {</span>
+<span class="fc" id="L24">            throw new ValidationException(&quot;Numéro RPPS invalide (11 chiffres requis)&quot;);</span>
+        }
+<span class="fc" id="L26">    }</span>
+
+    public static void validateNSS(String numSecuriteSociale) {
+<span class="pc bpc" id="L29" title="1 of 4 branches missed.">        if (numSecuriteSociale == null || !NSS_PATTERN.matcher(numSecuriteSociale).matches()) {</span>
+<span class="fc" id="L30">            throw new ValidationException(&quot;Numéro de sécurité sociale invalide (15 chiffres requis)&quot;);</span>
+        }
+<span class="fc" id="L32">    }</span>
+
+    public static void validatePasswordMatch(String password, String confirmPassword) {
+<span class="pc bpc" id="L35" title="1 of 4 branches missed.">        if (confirmPassword == null || !confirmPassword.equals(password)) {</span>
+<span class="fc" id="L36">            throw new ValidationException(&quot;Les mots de passe ne correspondent pas&quot;);</span>
+        }
+<span class="fc" id="L38">    }</span>
+
+    public static void validateMedecinTraitant(Medecin medecin) {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (medecin.getSpecialite() != Specialite.GENERALISTE) {</span>
+<span class="fc" id="L42">            throw new ValidationException(&quot;Le médecin traitant doit être un généraliste&quot;);</span>
+        }
+<span class="fc" id="L44">    }</span>
+
+    public static void validateDuree(String duree) {
+<span class="pc bpc" id="L47" title="3 of 4 branches missed.">        if (duree != null &amp;&amp; duree.isBlank()) {</span>
+<span class="nc" id="L48">            throw new ValidationException(&quot;La durée de traitement ne peut pas être vide&quot;);</span>
+        }
+<span class="fc" id="L50">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

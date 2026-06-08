@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReimbursementService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">ReimbursementService.java</span></div><h1>ReimbursementService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+
+import com.assurance.nation.dto.ReimbursementDTO;
+import com.assurance.nation.entity.Assure;
+import com.assurance.nation.entity.MedicalRecord;
+import com.assurance.nation.entity.Reimbursement;
+import com.assurance.nation.entity.enums.AuditAction;
+import com.assurance.nation.entity.enums.ReimbursementStatus;
+import com.assurance.nation.entity.enums.TypeConsultation;
+import com.assurance.nation.exception.BusinessException;
+import com.assurance.nation.exception.ResourceNotFoundException;
+import com.assurance.nation.mapper.ReimbursementMapper;
+import com.assurance.nation.repository.MedicalRecordRepository;
+import com.assurance.nation.repository.ReimbursementRepository;
+import com.assurance.nation.security.OwnershipService;
+import com.assurance.nation.security.SecurityUtil;
+import com.assurance.nation.util.Constants;
+import com.assurance.nation.util.PdfGenerator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+/**
+ * Logique de remboursement : taux 100% généraliste, 80% spécialiste, workflow PENDING → APPROVED → PAID.
+ */
+@Service
+<span class="fc" id="L48">@RequiredArgsConstructor</span>
+public class ReimbursementService {
+
+    private final ReimbursementRepository reimbursementRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+    private final MedicalRecordService medicalRecordService;
+    private final ReimbursementMapper reimbursementMapper;
+    private final NotificationService notificationService;
+    private final AuditService auditService;
+    private final PdfGenerator pdfGenerator;
+    private final OwnershipService ownershipService;
+
+    @Transactional
+    public ReimbursementDTO.Response create(ReimbursementDTO.CreateRequest request, String ip) {
+<span class="fc" id="L62">        MedicalRecord record = medicalRecordService.getEntity(request.getMedicalRecordId());</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (record.isEstRemboursee()) {</span>
+<span class="nc" id="L64">            throw new BusinessException(&quot;Cette feuille de maladie est déjà remboursée&quot;);</span>
+        }
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (reimbursementRepository.existsByMedicalRecordId(record.getId())) {</span>
+<span class="nc" id="L67">            throw new BusinessException(&quot;Un remboursement existe déjà pour cette feuille de maladie&quot;);</span>
+        }
+<span class="fc" id="L69">        TypeConsultation type = record.getConsultation().getTypeConsultation();</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        int taux = type == TypeConsultation.GENERALISTE ? Constants.TAUX_GENERALISTE : Constants.TAUX_SPECIALISTE;</span>
+<span class="fc" id="L71">        BigDecimal montantRembourse = request.getMontantTotal()</span>
+<span class="fc" id="L72">                .multiply(BigDecimal.valueOf(taux))</span>
+<span class="fc" id="L73">                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);</span>
+
+<span class="fc" id="L75">        Reimbursement reimbursement = Reimbursement.builder()</span>
+<span class="fc" id="L76">                .numRemboursement(generateNumRemboursement())</span>
+<span class="fc" id="L77">                .medicalRecord(record)</span>
+<span class="fc" id="L78">                .montantTotal(request.getMontantTotal())</span>
+<span class="fc" id="L79">                .tauxRemboursement(taux)</span>
+<span class="fc" id="L80">                .montantRembourse(montantRembourse)</span>
+<span class="fc" id="L81">                .modePaiement(request.getModePaiement())</span>
+<span class="fc" id="L82">                .notes(request.getNotes())</span>
+<span class="fc" id="L83">                .status(ReimbursementStatus.PENDING)</span>
+<span class="fc" id="L84">                .build();</span>
+
+        try {
+<span class="fc" id="L87">            String path = pdfGenerator.generateJustificatif(reimbursement);</span>
+<span class="fc" id="L88">            reimbursement.setJustificatifPath(path);</span>
+<span class="nc" id="L89">        } catch (IOException e) {</span>
+<span class="nc" id="L90">            throw new BusinessException(&quot;Échec de génération du justificatif PDF&quot;);</span>
+<span class="fc" id="L91">        }</span>
+<span class="fc" id="L92">        reimbursement = reimbursementRepository.save(reimbursement);</span>
+<span class="fc" id="L93">        Assure assure = record.getAssure();</span>
+<span class="fc" id="L94">        notificationService.notifyReimbursementCreated(reimbursement, assure);</span>
+<span class="fc" id="L95">        auditService.log(&quot;Reimbursement&quot;, reimbursement.getId().toString(), AuditAction.CREATE,</span>
+<span class="fc" id="L96">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
+<span class="fc" id="L97">                reimbursementMapper.toResponse(reimbursement), ip);</span>
+<span class="fc" id="L98">        return reimbursementMapper.toResponse(reimbursement);</span>
+    }
+
+    @Transactional
+    public ReimbursementDTO.Response approve(UUID id, String ip) {
+<span class="fc" id="L103">        Reimbursement reimbursement = getEntity(id);</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (reimbursement.getStatus() != ReimbursementStatus.PENDING) {</span>
+<span class="nc" id="L105">            throw new BusinessException(&quot;Seul un remboursement en attente peut être approuvé&quot;);</span>
+        }
+<span class="fc" id="L107">        reimbursement.setStatus(ReimbursementStatus.APPROVED);</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (reimbursement.getJustificatifPath() == null) {</span>
+            try {
+<span class="fc" id="L110">                String path = pdfGenerator.generateJustificatif(reimbursement);</span>
+<span class="fc" id="L111">                reimbursement.setJustificatifPath(path);</span>
+<span class="nc" id="L112">            } catch (IOException e) {</span>
+<span class="nc" id="L113">                throw new BusinessException(&quot;Échec de génération du justificatif PDF&quot;);</span>
+<span class="fc" id="L114">            }</span>
+        }
+<span class="fc" id="L116">        reimbursement = reimbursementRepository.save(reimbursement);</span>
+<span class="fc" id="L117">        notificationService.notifyReimbursementApproved(reimbursement, reimbursement.getMedicalRecord().getAssure());</span>
+<span class="fc" id="L118">        auditService.log(&quot;Reimbursement&quot;, id.toString(), AuditAction.UPDATE,</span>
+<span class="fc" id="L119">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
+<span class="fc" id="L120">                reimbursementMapper.toResponse(reimbursement), ip);</span>
+<span class="fc" id="L121">        return reimbursementMapper.toResponse(reimbursement);</span>
+    }
+
+    @Transactional
+    public ReimbursementDTO.Response reject(UUID id, ReimbursementDTO.RejectRequest request, String ip) {
+<span class="fc" id="L126">        Reimbursement reimbursement = getEntity(id);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        if (reimbursement.getStatus() != ReimbursementStatus.PENDING) {</span>
+<span class="nc" id="L128">            throw new BusinessException(&quot;Seul un remboursement en attente peut être rejeté&quot;);</span>
+        }
+<span class="fc" id="L130">        reimbursement.setStatus(ReimbursementStatus.REJECTED);</span>
+<span class="fc" id="L131">        reimbursement.setNotes(request.getMotif());</span>
+<span class="fc" id="L132">        reimbursement = reimbursementRepository.save(reimbursement);</span>
+<span class="fc" id="L133">        notificationService.notifyReimbursementRejected(reimbursement, request.getMotif());</span>
+<span class="fc" id="L134">        auditService.log(&quot;Reimbursement&quot;, id.toString(), AuditAction.UPDATE,</span>
+<span class="fc" id="L135">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
+<span class="fc" id="L136">                reimbursementMapper.toResponse(reimbursement), ip);</span>
+<span class="fc" id="L137">        return reimbursementMapper.toResponse(reimbursement);</span>
+    }
+
+    @Transactional
+    public ReimbursementDTO.Response markPaid(UUID id, String ip) {
+<span class="fc" id="L142">        Reimbursement reimbursement = getEntity(id);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (reimbursement.getStatus() != ReimbursementStatus.APPROVED) {</span>
+<span class="fc" id="L144">            throw new BusinessException(&quot;Seul un remboursement approuvé peut être marqué comme payé&quot;);</span>
+        }
+<span class="fc" id="L146">        reimbursement.setStatus(ReimbursementStatus.PAID);</span>
+<span class="fc" id="L147">        reimbursement.setDateRemboursement(LocalDateTime.now());</span>
+<span class="fc" id="L148">        reimbursement = reimbursementRepository.save(reimbursement);</span>
+
+<span class="fc" id="L150">        MedicalRecord record = reimbursement.getMedicalRecord();</span>
+<span class="fc" id="L151">        record.setEstRemboursee(true);</span>
+<span class="fc" id="L152">        record.setDateRemboursement(LocalDateTime.now());</span>
+<span class="fc" id="L153">        record.setMontantRembourse(reimbursement.getMontantRembourse());</span>
+<span class="fc" id="L154">        medicalRecordRepository.save(record);</span>
+
+<span class="fc" id="L156">        notificationService.notifyReimbursementPaid(reimbursement, record.getAssure());</span>
+<span class="fc" id="L157">        auditService.log(&quot;Reimbursement&quot;, id.toString(), AuditAction.UPDATE,</span>
+<span class="fc" id="L158">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
+<span class="fc" id="L159">                reimbursementMapper.toResponse(reimbursement), ip);</span>
+<span class="fc" id="L160">        return reimbursementMapper.toResponse(reimbursement);</span>
+    }
+
+    private String generateNumRemboursement() {
+<span class="fc" id="L164">        int year = Year.now().getValue();</span>
+<span class="fc" id="L165">        String prefix = Constants.REMBOURSEMENT_PREFIX + &quot;-&quot; + year + &quot;-&quot;;</span>
+<span class="fc" id="L166">        long count = reimbursementRepository.countByNumPrefix(prefix) + 1;</span>
+<span class="fc" id="L167">        return prefix + String.format(&quot;%06d&quot;, count);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ReimbursementDTO.PageResponse findAll(
+            int page, int size, ReimbursementStatus status, UUID assureId,
+            LocalDate startDate, LocalDate endDate) {
+<span class="fc" id="L174">        PageRequest pageable = PageRequest.of(page, Math.min(size, Constants.MAX_PAGE_SIZE),</span>
+<span class="fc" id="L175">                Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        LocalDateTime start = startDate != null ? startDate.atStartOfDay() : null;</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        LocalDateTime end = endDate != null ? endDate.atTime(23, 59, 59) : null;</span>
+<span class="fc" id="L178">        Page&lt;Reimbursement&gt; result = reimbursementRepository.findFiltered(status, assureId, start, end, pageable);</span>
+<span class="fc" id="L179">        List&lt;ReimbursementDTO.Response&gt; content = result.getContent().stream()</span>
+<span class="fc" id="L180">                .map(reimbursementMapper::toResponse).toList();</span>
+<span class="fc" id="L181">        ReimbursementDTO.PageResponse response = new ReimbursementDTO.PageResponse();</span>
+<span class="fc" id="L182">        response.setContent(content);</span>
+<span class="fc" id="L183">        response.setTotalElements(result.getTotalElements());</span>
+<span class="fc" id="L184">        response.setTotalPages(result.getTotalPages());</span>
+<span class="fc" id="L185">        response.setPage(result.getNumber());</span>
+<span class="fc" id="L186">        response.setSize(result.getSize());</span>
+<span class="fc" id="L187">        response.setStatistics(buildListStatistics(result.getContent()));</span>
+<span class="fc" id="L188">        return response;</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ReimbursementDTO.PageResponse findForCurrentPatient(int page, int size) {
+<span class="fc" id="L193">        Assure assure = ownershipService.getCurrentAssure();</span>
+<span class="fc" id="L194">        PageRequest pageable = PageRequest.of(page, Math.min(size, Constants.MAX_PAGE_SIZE),</span>
+<span class="fc" id="L195">                Sort.by(Sort.Direction.DESC, &quot;createdAt&quot;));</span>
+<span class="fc" id="L196">        Page&lt;Reimbursement&gt; result = reimbursementRepository.findByAssureId(assure.getId(), pageable);</span>
+<span class="fc" id="L197">        List&lt;ReimbursementDTO.Response&gt; content = result.getContent().stream()</span>
+<span class="fc" id="L198">                .map(reimbursementMapper::toResponse).toList();</span>
+<span class="fc" id="L199">        ReimbursementDTO.PageResponse response = new ReimbursementDTO.PageResponse();</span>
+<span class="fc" id="L200">        response.setContent(content);</span>
+<span class="fc" id="L201">        response.setTotalElements(result.getTotalElements());</span>
+<span class="fc" id="L202">        response.setTotalPages(result.getTotalPages());</span>
+<span class="fc" id="L203">        response.setPage(result.getNumber());</span>
+<span class="fc" id="L204">        response.setSize(result.getSize());</span>
+<span class="fc" id="L205">        return response;</span>
+    }
+
+    private ReimbursementDTO.ListStatistics buildListStatistics(List&lt;Reimbursement&gt; items) {
+<span class="fc" id="L209">        ReimbursementDTO.ListStatistics stats = new ReimbursementDTO.ListStatistics();</span>
+<span class="fc" id="L210">        stats.setNombreRemboursements(items.size());</span>
+<span class="fc" id="L211">        BigDecimal total = items.stream()</span>
+<span class="fc" id="L212">                .map(Reimbursement::getMontantRembourse)</span>
+<span class="fc" id="L213">                .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+<span class="fc" id="L214">        stats.setTotalRembourses(total);</span>
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        if (!items.isEmpty()) {</span>
+<span class="fc" id="L216">            stats.setMoyenneParRemboursement(total.divide(BigDecimal.valueOf(items.size()), 2, RoundingMode.HALF_UP));</span>
+        } else {
+<span class="nc" id="L218">            stats.setMoyenneParRemboursement(BigDecimal.ZERO);</span>
+        }
+<span class="fc" id="L220">        return stats;</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ReimbursementDTO.Response findById(UUID id) {
+<span class="fc" id="L225">        Reimbursement r = getEntity(id);</span>
+<span class="fc" id="L226">        ownershipService.assertCanAccessReimbursement(r);</span>
+<span class="fc" id="L227">        return reimbursementMapper.toResponse(r);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ReimbursementDTO.DashboardResponse dashboard() {
+<span class="fc" id="L232">        ReimbursementDTO.DashboardResponse dto = new ReimbursementDTO.DashboardResponse();</span>
+<span class="fc" id="L233">        dto.setTotalRemboursements(reimbursementRepository.count());</span>
+<span class="fc" id="L234">        dto.setPendingCount(reimbursementRepository.countByStatus(ReimbursementStatus.PENDING));</span>
+<span class="fc" id="L235">        dto.setApprovedCount(reimbursementRepository.countByStatus(ReimbursementStatus.APPROVED));</span>
+<span class="fc" id="L236">        dto.setPaidCount(reimbursementRepository.countByStatus(ReimbursementStatus.PAID));</span>
+<span class="fc" id="L237">        dto.setRejectedCount(reimbursementRepository.countByStatus(ReimbursementStatus.REJECTED));</span>
+<span class="fc" id="L238">        dto.setMontantTotalPaye(reimbursementRepository.sumMontantPaye());</span>
+<span class="fc" id="L239">        dto.setTotalMontants(dto.getMontantTotalPaye());</span>
+<span class="fc" id="L240">        dto.setRembourseParMois(buildMonthlyStats());</span>
+<span class="fc" id="L241">        dto.setRembourseParSpecialite(buildSpecialiteStats());</span>
+<span class="fc" id="L242">        return dto;</span>
+    }
+
+    private List&lt;ReimbursementDTO.MonthlyStat&gt; buildMonthlyStats() {
+<span class="fc" id="L246">        List&lt;Reimbursement&gt; paid = reimbursementRepository.findByStatus(ReimbursementStatus.PAID);</span>
+<span class="fc" id="L247">        Map&lt;YearMonth, ReimbursementDTO.MonthlyStat&gt; byMonth = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L248">        DateTimeFormatter fmt = DateTimeFormatter.ofPattern(&quot;yyyy-MM&quot;);</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        for (Reimbursement r : paid) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">            if (r.getDateRemboursement() == null) continue;</span>
+<span class="nc" id="L251">            YearMonth ym = YearMonth.from(r.getDateRemboursement());</span>
+<span class="nc" id="L252">            ReimbursementDTO.MonthlyStat stat = byMonth.computeIfAbsent(ym, k -&gt; {</span>
+<span class="nc" id="L253">                ReimbursementDTO.MonthlyStat s = new ReimbursementDTO.MonthlyStat();</span>
+<span class="nc" id="L254">                s.setMois(k.format(fmt));</span>
+<span class="nc" id="L255">                s.setMontant(BigDecimal.ZERO);</span>
+<span class="nc" id="L256">                s.setCount(0);</span>
+<span class="nc" id="L257">                return s;</span>
+            });
+<span class="nc" id="L259">            stat.setMontant(stat.getMontant().add(r.getMontantRembourse()));</span>
+<span class="nc" id="L260">            stat.setCount(stat.getCount() + 1);</span>
+<span class="nc" id="L261">        }</span>
+<span class="fc" id="L262">        return new ArrayList&lt;&gt;(byMonth.values());</span>
+    }
+
+    private Map&lt;String, ReimbursementDTO.SpecialiteStat&gt; buildSpecialiteStats() {
+<span class="fc" id="L266">        List&lt;Reimbursement&gt; paid = reimbursementRepository.findByStatus(ReimbursementStatus.PAID);</span>
+<span class="fc" id="L267">        Map&lt;String, BigDecimal&gt; montants = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L268">        montants.put(&quot;GENERALISTE&quot;, BigDecimal.ZERO);</span>
+<span class="fc" id="L269">        montants.put(&quot;SPECIALISTE&quot;, BigDecimal.ZERO);</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        for (Reimbursement r : paid) {</span>
+<span class="nc" id="L271">            TypeConsultation type = r.getMedicalRecord().getConsultation().getTypeConsultation();</span>
+<span class="nc" id="L272">            String key = type.name();</span>
+<span class="nc" id="L273">            montants.merge(key, r.getMontantRembourse(), BigDecimal::add);</span>
+<span class="nc" id="L274">        }</span>
+<span class="fc" id="L275">        BigDecimal total = montants.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+<span class="fc" id="L276">        Map&lt;String, ReimbursementDTO.SpecialiteStat&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        for (Map.Entry&lt;String, BigDecimal&gt; e : montants.entrySet()) {</span>
+<span class="fc" id="L278">            ReimbursementDTO.SpecialiteStat stat = new ReimbursementDTO.SpecialiteStat();</span>
+<span class="fc" id="L279">            stat.setMontant(e.getValue());</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            stat.setTaux(total.compareTo(BigDecimal.ZERO) &gt; 0</span>
+<span class="nc" id="L281">                    ? e.getValue().multiply(BigDecimal.valueOf(100))</span>
+<span class="nc" id="L282">                            .divide(total, 1, RoundingMode.HALF_UP).doubleValue()</span>
+<span class="fc" id="L283">                    : 0.0);</span>
+<span class="fc" id="L284">            result.put(e.getKey(), stat);</span>
+<span class="fc" id="L285">        }</span>
+<span class="fc" id="L286">        return result;</span>
+    }
+
+    @Transactional(readOnly = true)
+    public Resource downloadJustificatif(UUID id) throws IOException {
+<span class="nc" id="L291">        Reimbursement r = getEntity(id);</span>
+<span class="nc" id="L292">        ownershipService.assertCanAccessReimbursement(r);</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (r.getJustificatifPath() == null) {</span>
+<span class="nc" id="L294">            throw new ResourceNotFoundException(&quot;Justificatif non disponible&quot;);</span>
+        }
+<span class="nc" id="L296">        Path path = Paths.get(r.getJustificatifPath());</span>
+<span class="nc" id="L297">        return new UrlResource(path.toUri());</span>
+    }
+
+    public Reimbursement getEntity(UUID id) {
+<span class="fc" id="L301">        return reimbursementRepository.findById(id)</span>
+<span class="pc" id="L302">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Remboursement introuvable&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RoleAssignmentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">RoleAssignmentService.java</span></div><h1>RoleAssignmentService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+
+import com.assurance.nation.entity.Role;
+import com.assurance.nation.entity.User;
+import com.assurance.nation.entity.enums.RoleName;
+import com.assurance.nation.exception.ValidationException;
+import com.assurance.nation.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Service
+<span class="fc" id="L15">@RequiredArgsConstructor</span>
+public class RoleAssignmentService {
+
+    private final RoleRepository roleRepository;
+
+    public void assignRole(User user, RoleName roleName) {
+<span class="fc" id="L21">        Role role = roleRepository.findByRoleName(roleName)</span>
+<span class="fc" id="L22">                .orElseThrow(() -&gt; new ValidationException(&quot;Rôle introuvable: &quot; + roleName));</span>
+<span class="fc" id="L23">        Set&lt;Role&gt; roles = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L24">        roles.add(role);</span>
+<span class="fc" id="L25">        user.setRoles(roles);</span>
+<span class="fc" id="L26">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

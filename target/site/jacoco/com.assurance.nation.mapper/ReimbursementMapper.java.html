@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReimbursementMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.mapper</a> &gt; <span class="el_source">ReimbursementMapper.java</span></div><h1>ReimbursementMapper.java</h1><pre class="source lang-java linenums">package com.assurance.nation.mapper;
+
+import com.assurance.nation.dto.ReimbursementDTO;
+import com.assurance.nation.entity.Reimbursement;
+import org.springframework.stereotype.Component;
+
+@Component
+<span class="fc" id="L8">public class ReimbursementMapper {</span>
+
+    public ReimbursementDTO.Response toResponse(Reimbursement r) {
+<span class="fc" id="L11">        ReimbursementDTO.Response dto = new ReimbursementDTO.Response();</span>
+<span class="fc" id="L12">        dto.setId(r.getId());</span>
+<span class="fc" id="L13">        dto.setNumRemboursement(r.getNumRemboursement());</span>
+<span class="fc" id="L14">        dto.setMedicalRecordId(r.getMedicalRecord().getId());</span>
+<span class="pc bpc" id="L15" title="1 of 2 branches missed.">        if (r.getMedicalRecord().getAssure() != null) {</span>
+<span class="nc" id="L16">            dto.setAssureId(r.getMedicalRecord().getAssure().getId());</span>
+<span class="nc" id="L17">            dto.setAssureNom(r.getMedicalRecord().getAssure().getNom());</span>
+        }
+<span class="fc" id="L19">        dto.setMontantTotal(r.getMontantTotal());</span>
+<span class="fc" id="L20">        dto.setTauxRemboursement(r.getTauxRemboursement());</span>
+<span class="fc" id="L21">        dto.setMontantRembourse(r.getMontantRembourse());</span>
+<span class="fc" id="L22">        dto.setModePaiement(r.getModePaiement());</span>
+<span class="fc" id="L23">        dto.setStatus(r.getStatus());</span>
+<span class="fc" id="L24">        dto.setDateRemboursement(r.getDateRemboursement());</span>
+<span class="fc" id="L25">        dto.setCreatedAt(r.getCreatedAt());</span>
+<span class="fc" id="L26">        dto.setNotes(r.getNotes());</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if (r.getJustificatifPath() != null) {</span>
+<span class="nc" id="L28">            dto.setJustificatifUrl(&quot;/api/v1/reimbursements/&quot; + r.getId() + &quot;/justificatif&quot;);</span>
+        }
+<span class="fc" id="L30">        return dto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

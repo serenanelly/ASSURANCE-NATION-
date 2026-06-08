@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssureController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.controller</a> &gt; <span class="el_source">AssureController.java</span></div><h1>AssureController.java</h1><pre class="source lang-java linenums">package com.assurance.nation.controller;
+
+import com.assurance.nation.dto.AssureDTO;
+import com.assurance.nation.dto.PageDTO;
+import com.assurance.nation.service.AssureService;
+import com.assurance.nation.util.Constants;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping(Constants.API_V1 + &quot;/users/assures&quot;)
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+@Tag(name = &quot;Assurés&quot;, description = &quot;Gestion des assurés / patients&quot;)
+@SecurityRequirement(name = &quot;bearerAuth&quot;)
+public class AssureController {
+
+    private final AssureService assureService;
+
+    @PostMapping
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR')&quot;)
+    @Operation(summary = &quot;Enregistrer un assuré (ASSUREUR)&quot;)
+    public ResponseEntity&lt;AssureDTO.AssureResponse&gt; register(@Valid @RequestBody AssureDTO.RegisterAssureRequest request) {
+<span class="nc" id="L32">        return ResponseEntity.status(HttpStatus.CREATED).body(assureService.register(request));</span>
+    }
+
+    @GetMapping
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR','MEDECIN')&quot;)
+    @Operation(summary = &quot;Lister les assurés (paginé, recherche)&quot;)
+    public ResponseEntity&lt;PageDTO&lt;AssureDTO.AssureResponse&gt;&gt; list(
+            @RequestParam(defaultValue = &quot;0&quot;) int page,
+            @RequestParam(defaultValue = &quot;20&quot;) int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean actif) {
+<span class="nc" id="L43">        return ResponseEntity.ok(assureService.findAll(page, size, search, actif));</span>
+    }
+
+    @GetMapping(&quot;/search&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR','MEDECIN')&quot;)
+    @Operation(summary = &quot;Rechercher un assuré par numéro de sécurité sociale&quot;)
+    public ResponseEntity&lt;AssureDTO.AssureResponse&gt; searchByNss(@RequestParam String nss) {
+<span class="nc" id="L50">        return ResponseEntity.ok(assureService.searchByNSS(nss));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR','MEDECIN','PATIENT')&quot;)
+    @Operation(summary = &quot;Détails d'un assuré&quot;)
+    public ResponseEntity&lt;AssureDTO.AssureResponse&gt; get(@PathVariable UUID id) {
+<span class="nc" id="L57">        return ResponseEntity.ok(assureService.findById(id));</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR')&quot;)
+    @Operation(summary = &quot;Modifier un assuré&quot;)
+    public ResponseEntity&lt;AssureDTO.AssureResponse&gt; update(
+            @PathVariable UUID id,
+            @Valid @RequestBody AssureDTO.UpdateAssureRequest request) {
+<span class="nc" id="L66">        return ResponseEntity.ok(assureService.update(id, request));</span>
+    }
+
+    @PutMapping(&quot;/{id}/medecin-traitant&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR')&quot;)
+    @Operation(summary = &quot;Modifier le médecin traitant&quot;)
+    public ResponseEntity&lt;AssureDTO.AssureResponse&gt; updateMedecinTraitant(
+            @PathVariable UUID id,
+            @Valid @RequestBody AssureDTO.UpdateMedecinTraitantRequest request) {
+<span class="nc" id="L75">        return ResponseEntity.ok(assureService.updateMedecinTraitant(id, request));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ADMIN','ASSUREUR')&quot;)
+    @Operation(summary = &quot;Supprimer logiquement un assuré&quot;)
+    public ResponseEntity&lt;Void&gt; delete(@PathVariable UUID id) {
+<span class="nc" id="L82">        assureService.delete(id);</span>
+<span class="nc" id="L83">        return ResponseEntity.noContent().build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
