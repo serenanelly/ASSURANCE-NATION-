@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataInitializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.config</a> &gt; <span class="el_source">DataInitializer.java</span></div><h1>DataInitializer.java</h1><pre class="source lang-java linenums">package com.assurance.nation.config;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataInitializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.config</a> &gt; <span class="el_source">DataInitializer.java</span></div><h1>DataInitializer.java</h1><pre class="source lang-java linenums">package com.assurance.nation.config;
 
 import com.assurance.nation.entity.Assureur;
 import com.assurance.nation.entity.Role;
@@ -22,8 +22,8 @@ import java.util.Set;
  */
 @Component
 @Profile({&quot;test&quot;, &quot;dev&quot;, &quot;local&quot;})
-<span class="fc" id="L25">@RequiredArgsConstructor</span>
-<span class="fc" id="L26">@Slf4j</span>
+<span class="nc" id="L25">@RequiredArgsConstructor</span>
+<span class="nc" id="L26">@Slf4j</span>
 public class DataInitializer implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
@@ -33,26 +33,26 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-<span class="fc bfc" id="L36" title="All 2 branches covered.">        for (RoleName name : RoleName.values()) {</span>
-<span class="fc" id="L37">            roleRepository.findByRoleName(name).orElseGet(() -&gt; roleRepository.save(Role.builder()</span>
-<span class="fc" id="L38">                    .roleName(name)</span>
-<span class="fc" id="L39">                    .description(&quot;Rôle &quot; + name)</span>
-<span class="fc" id="L40">                    .build()));</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (RoleName name : RoleName.values()) {</span>
+<span class="nc" id="L37">            roleRepository.findByRoleName(name).orElseGet(() -&gt; roleRepository.save(Role.builder()</span>
+<span class="nc" id="L38">                    .roleName(name)</span>
+<span class="nc" id="L39">                    .description(&quot;Rôle &quot; + name)</span>
+<span class="nc" id="L40">                    .build()));</span>
         }
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (userRepository.findByEmail(&quot;admin@assurance-nation.local&quot;).isEmpty()) {</span>
-<span class="fc" id="L43">            Assureur admin = new Assureur();</span>
-<span class="fc" id="L44">            admin.setEmail(&quot;admin@assurance-nation.local&quot;);</span>
-<span class="fc" id="L45">            admin.setPasswordHash(passwordEncoder.encode(&quot;admin123&quot;));</span>
-<span class="fc" id="L46">            admin.setNom(&quot;Admin&quot;);</span>
-<span class="fc" id="L47">            admin.setPrenom(&quot;Système&quot;);</span>
-<span class="fc" id="L48">            admin.setUserType(UserType.ASSUREUR);</span>
-<span class="fc" id="L49">            Role role = roleRepository.findByRoleName(RoleName.ADMIN).orElseThrow();</span>
-<span class="fc" id="L50">            Set&lt;Role&gt; roles = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L51">            roles.add(role);</span>
-<span class="fc" id="L52">            admin.setRoles(roles);</span>
-<span class="fc" id="L53">            userRepository.save(admin);</span>
-<span class="fc" id="L54">            log.info(&quot;Compte admin: admin@assurance-nation.local / admin123&quot;);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (userRepository.findByEmail(&quot;admin@assurance-nation.local&quot;).isEmpty()) {</span>
+<span class="nc" id="L43">            Assureur admin = new Assureur();</span>
+<span class="nc" id="L44">            admin.setEmail(&quot;admin@assurance-nation.local&quot;);</span>
+<span class="nc" id="L45">            admin.setPasswordHash(passwordEncoder.encode(&quot;admin123&quot;));</span>
+<span class="nc" id="L46">            admin.setNom(&quot;Admin&quot;);</span>
+<span class="nc" id="L47">            admin.setPrenom(&quot;Système&quot;);</span>
+<span class="nc" id="L48">            admin.setUserType(UserType.ASSUREUR);</span>
+<span class="nc" id="L49">            Role role = roleRepository.findByRoleName(RoleName.ADMIN).orElseThrow();</span>
+<span class="nc" id="L50">            Set&lt;Role&gt; roles = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L51">            roles.add(role);</span>
+<span class="nc" id="L52">            admin.setRoles(roles);</span>
+<span class="nc" id="L53">            userRepository.save(admin);</span>
+<span class="nc" id="L54">            log.info(&quot;Compte admin: admin@assurance-nation.local / admin123&quot;);</span>
         }
-<span class="fc" id="L56">    }</span>
+<span class="nc" id="L56">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

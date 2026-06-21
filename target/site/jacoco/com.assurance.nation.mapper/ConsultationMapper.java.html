@@ -1,28 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConsultationMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.mapper</a> &gt; <span class="el_source">ConsultationMapper.java</span></div><h1>ConsultationMapper.java</h1><pre class="source lang-java linenums">package com.assurance.nation.mapper;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConsultationMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.mapper</a> &gt; <span class="el_source">ConsultationMapper.java</span></div><h1>ConsultationMapper.java</h1><pre class="source lang-java linenums">package com.assurance.nation.mapper;
 
 import com.assurance.nation.dto.ConsultationDTO;
 import com.assurance.nation.entity.Consultation;
 import org.springframework.stereotype.Component;
 
 @Component
-<span class="fc" id="L8">public class ConsultationMapper {</span>
+<span class="nc" id="L8">public class ConsultationMapper {</span>
 
     public ConsultationDTO.Response toResponse(Consultation c) {
-<span class="fc" id="L11">        ConsultationDTO.Response dto = new ConsultationDTO.Response();</span>
-<span class="fc" id="L12">        dto.setId(c.getId());</span>
-<span class="fc" id="L13">        dto.setAssureId(c.getAssure().getId());</span>
-<span class="fc" id="L14">        dto.setAssureNom(c.getAssure().getNom() + &quot; &quot; + c.getAssure().getPrenom());</span>
-<span class="fc" id="L15">        dto.setMedecinId(c.getMedecin().getId());</span>
-<span class="fc" id="L16">        dto.setMedecinNom(c.getMedecin().getNom() + &quot; &quot; + c.getMedecin().getPrenom());</span>
-<span class="fc" id="L17">        dto.setDateConsultation(c.getDateConsultation());</span>
-<span class="fc" id="L18">        dto.setTypeConsultation(c.getTypeConsultation());</span>
-<span class="fc" id="L19">        dto.setDiagnostique(c.getDiagnostique());</span>
-<span class="fc" id="L20">        dto.setMotif(c.getMotif());</span>
-<span class="fc" id="L21">        dto.setNotes(c.getNotes());</span>
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        if (c.getMedicalRecord() != null) {</span>
+<span class="nc" id="L11">        ConsultationDTO.Response dto = new ConsultationDTO.Response();</span>
+<span class="nc" id="L12">        dto.setId(c.getId());</span>
+<span class="nc" id="L13">        dto.setAssureId(c.getAssure().getId());</span>
+<span class="nc" id="L14">        dto.setAssureNom(c.getAssure().getNom() + &quot; &quot; + c.getAssure().getPrenom());</span>
+<span class="nc" id="L15">        dto.setMedecinId(c.getMedecin().getId());</span>
+<span class="nc" id="L16">        dto.setMedecinNom(c.getMedecin().getNom() + &quot; &quot; + c.getMedecin().getPrenom());</span>
+<span class="nc" id="L17">        dto.setDateConsultation(c.getDateConsultation());</span>
+<span class="nc" id="L18">        dto.setTypeConsultation(c.getTypeConsultation());</span>
+<span class="nc" id="L19">        dto.setDiagnostique(c.getDiagnostique());</span>
+<span class="nc" id="L20">        dto.setMotif(c.getMotif());</span>
+<span class="nc" id="L21">        dto.setNotes(c.getNotes());</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">        if (c.getMedicalRecord() != null) {</span>
 <span class="nc" id="L23">            dto.setMedicalRecordId(c.getMedicalRecord().getId());</span>
         }
-<span class="fc" id="L25">        return dto;</span>
+<span class="nc" id="L25">        return dto;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -6,6 +6,7 @@ import com.assurance.nation.entity.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -31,7 +32,7 @@ public class AuthDTO {
         private String adresse;
         private String telephone;
         private Sexe sexe;
-        @NotBlank private UserType userType;
+        @NotNull private UserType userType;
         private String numeroRPPS;
         private Specialite specialite;
         private String numSecuriteSociale;

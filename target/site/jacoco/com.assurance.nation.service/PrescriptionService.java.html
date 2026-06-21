@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">PrescriptionService.java</span></div><h1>PrescriptionService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrescriptionService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">PrescriptionService.java</span></div><h1>PrescriptionService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
 
 import com.assurance.nation.dto.PrescriptionDTO;
 import com.assurance.nation.entity.*;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-<span class="fc" id="L22">@RequiredArgsConstructor</span>
+<span class="nc" id="L22">@RequiredArgsConstructor</span>
 public class PrescriptionService {
 
     private final PrescriptionRepository prescriptionRepository;
@@ -32,66 +32,66 @@ public class PrescriptionService {
 
     @Transactional
     public PrescriptionDTO.Response create(UUID consultationId, PrescriptionDTO.CreateRequest request, String ip) {
-<span class="fc" id="L35">        Consultation consultation = consultationService.getEntity(consultationId);</span>
-<span class="fc" id="L36">        ownershipService.assertCanAccessConsultation(consultation);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        Prescription prescription = switch (request.getType()) {</span>
-<span class="fc" id="L38">            case MEDICAMENT -&gt; buildMedicament(consultation, request);</span>
-<span class="fc" id="L39">            case CONSULTATION_SPECIALISTE -&gt; buildConsultationSpec(consultation, request);</span>
+<span class="nc" id="L35">        Consultation consultation = consultationService.getEntity(consultationId);</span>
+<span class="nc" id="L36">        ownershipService.assertCanAccessConsultation(consultation);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        Prescription prescription = switch (request.getType()) {</span>
+<span class="nc" id="L38">            case MEDICAMENT -&gt; buildMedicament(consultation, request);</span>
+<span class="nc" id="L39">            case CONSULTATION_SPECIALISTE -&gt; buildConsultationSpec(consultation, request);</span>
         };
-<span class="fc" id="L41">        prescription = prescriptionRepository.save(prescription);</span>
-<span class="fc" id="L42">        notificationService.notifyPrescriptionAdded(prescription);</span>
-<span class="fc" id="L43">        auditService.log(&quot;Prescription&quot;, prescription.getId().toString(), AuditAction.CREATE,</span>
-<span class="fc" id="L44">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
-<span class="fc" id="L45">                prescriptionMapper.toResponse(prescription), ip);</span>
-<span class="fc" id="L46">        return prescriptionMapper.toResponse(prescription);</span>
+<span class="nc" id="L41">        prescription = prescriptionRepository.save(prescription);</span>
+<span class="nc" id="L42">        notificationService.notifyPrescriptionAdded(prescription);</span>
+<span class="nc" id="L43">        auditService.log(&quot;Prescription&quot;, prescription.getId().toString(), AuditAction.CREATE,</span>
+<span class="nc" id="L44">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), null,</span>
+<span class="nc" id="L45">                prescriptionMapper.toResponse(prescription), ip);</span>
+<span class="nc" id="L46">        return prescriptionMapper.toResponse(prescription);</span>
     }
 
     private PrescriptionMedicament buildMedicament(Consultation consultation, PrescriptionDTO.CreateRequest request) {
-<span class="pc bpc" id="L50" title="2 of 4 branches missed.">        if (request.getMedicament() == null || request.getMedicament().isBlank()) {</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        if (request.getMedicament() == null || request.getMedicament().isBlank()) {</span>
 <span class="nc" id="L51">            throw new ValidationException(&quot;Nom du médicament obligatoire&quot;);</span>
         }
-<span class="fc" id="L53">        ValidationUtil.validateDuree(request.getDuree());</span>
-<span class="fc" id="L54">        PrescriptionMedicament pm = new PrescriptionMedicament();</span>
-<span class="fc" id="L55">        pm.setConsultation(consultation);</span>
-<span class="fc" id="L56">        pm.setMedicament(request.getMedicament());</span>
-<span class="fc" id="L57">        pm.setPosologie(request.getPosologie());</span>
-<span class="fc" id="L58">        pm.setDuree(request.getDuree());</span>
-<span class="fc" id="L59">        pm.setNotes(request.getNotes());</span>
-<span class="fc" id="L60">        return pm;</span>
+<span class="nc" id="L53">        ValidationUtil.validateDuree(request.getDuree());</span>
+<span class="nc" id="L54">        PrescriptionMedicament pm = new PrescriptionMedicament();</span>
+<span class="nc" id="L55">        pm.setConsultation(consultation);</span>
+<span class="nc" id="L56">        pm.setMedicament(request.getMedicament());</span>
+<span class="nc" id="L57">        pm.setPosologie(request.getPosologie());</span>
+<span class="nc" id="L58">        pm.setDuree(request.getDuree());</span>
+<span class="nc" id="L59">        pm.setNotes(request.getNotes());</span>
+<span class="nc" id="L60">        return pm;</span>
     }
 
     private PrescriptionConsultation buildConsultationSpec(Consultation consultation, PrescriptionDTO.CreateRequest request) {
-<span class="fc" id="L64">        PrescriptionConsultation pc = new PrescriptionConsultation();</span>
-<span class="fc" id="L65">        pc.setConsultation(consultation);</span>
-<span class="fc" id="L66">        pc.setMotif(request.getMotif());</span>
-<span class="fc" id="L67">        pc.setPriorite(request.getPriorite());</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        pc.setCodeReference(request.getCodeReference() != null</span>
+<span class="nc" id="L64">        PrescriptionConsultation pc = new PrescriptionConsultation();</span>
+<span class="nc" id="L65">        pc.setConsultation(consultation);</span>
+<span class="nc" id="L66">        pc.setMotif(request.getMotif());</span>
+<span class="nc" id="L67">        pc.setPriorite(request.getPriorite());</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        pc.setCodeReference(request.getCodeReference() != null</span>
 <span class="nc" id="L69">                ? request.getCodeReference()</span>
-<span class="fc" id="L70">                : generateCodeReference());</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (request.getMedecinSpecialisteId() != null) {</span>
+<span class="nc" id="L70">                : generateCodeReference());</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (request.getMedecinSpecialisteId() != null) {</span>
 <span class="nc" id="L72">            pc.setMedecinSpecialiste(medecinService.getEntity(request.getMedecinSpecialisteId()));</span>
         }
-<span class="fc" id="L74">        return pc;</span>
+<span class="nc" id="L74">        return pc;</span>
     }
 
     private String generateCodeReference() {
-<span class="fc" id="L78">        return &quot;REF-&quot; + System.currentTimeMillis();</span>
+<span class="nc" id="L78">        return &quot;REF-&quot; + System.currentTimeMillis();</span>
     }
 
     @Transactional(readOnly = true)
     public PrescriptionDTO.Response findById(UUID id) {
-<span class="fc" id="L83">        Prescription p = prescriptionRepository.findById(id)</span>
-<span class="pc" id="L84">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Prescription introuvable&quot;));</span>
-<span class="fc" id="L85">        ownershipService.assertCanAccessConsultation(p.getConsultation());</span>
-<span class="fc" id="L86">        return prescriptionMapper.toResponse(p);</span>
+<span class="nc" id="L83">        Prescription p = prescriptionRepository.findById(id)</span>
+<span class="nc" id="L84">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Prescription introuvable&quot;));</span>
+<span class="nc" id="L85">        ownershipService.assertCanAccessConsultation(p.getConsultation());</span>
+<span class="nc" id="L86">        return prescriptionMapper.toResponse(p);</span>
     }
 
     @Transactional(readOnly = true)
     public List&lt;PrescriptionDTO.Response&gt; findByConsultationId(UUID consultationId) {
-<span class="fc" id="L91">        Consultation consultation = consultationService.getEntity(consultationId);</span>
-<span class="fc" id="L92">        ownershipService.assertCanAccessConsultation(consultation);</span>
-<span class="fc" id="L93">        return prescriptionRepository.findByConsultationId(consultationId)</span>
-<span class="fc" id="L94">                .stream().map(prescriptionMapper::toResponse).toList();</span>
+<span class="nc" id="L91">        Consultation consultation = consultationService.getEntity(consultationId);</span>
+<span class="nc" id="L92">        ownershipService.assertCanAccessConsultation(consultation);</span>
+<span class="nc" id="L93">        return prescriptionRepository.findByConsultationId(consultationId)</span>
+<span class="nc" id="L94">                .stream().map(prescriptionMapper::toResponse).toList();</span>
     }
 
     @Transactional(readOnly = true)
@@ -102,19 +102,19 @@ public class PrescriptionService {
 
     @Transactional
     public void delete(UUID id, String ip) {
-<span class="fc" id="L105">        delete(id, null, ip);</span>
-<span class="fc" id="L106">    }</span>
+<span class="nc" id="L105">        delete(id, null, ip);</span>
+<span class="nc" id="L106">    }</span>
 
     @Transactional
     public void delete(UUID id, String motif, String ip) {
-<span class="fc" id="L110">        Prescription p = prescriptionRepository.findById(id)</span>
-<span class="pc" id="L111">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Prescription introuvable&quot;));</span>
-<span class="fc" id="L112">        ownershipService.assertCanAccessConsultation(p.getConsultation());</span>
-<span class="fc" id="L113">        p.softDelete();</span>
-<span class="fc" id="L114">        prescriptionRepository.save(p);</span>
-<span class="fc" id="L115">        auditService.log(&quot;Prescription&quot;, id.toString(), AuditAction.DELETE,</span>
-<span class="fc" id="L116">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()),</span>
+<span class="nc" id="L110">        Prescription p = prescriptionRepository.findById(id)</span>
+<span class="nc" id="L111">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Prescription introuvable&quot;));</span>
+<span class="nc" id="L112">        ownershipService.assertCanAccessConsultation(p.getConsultation());</span>
+<span class="nc" id="L113">        p.softDelete();</span>
+<span class="nc" id="L114">        prescriptionRepository.save(p);</span>
+<span class="nc" id="L115">        auditService.log(&quot;Prescription&quot;, id.toString(), AuditAction.DELETE,</span>
+<span class="nc" id="L116">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()),</span>
                 motif, null, ip);
-<span class="fc" id="L118">    }</span>
+<span class="nc" id="L118">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

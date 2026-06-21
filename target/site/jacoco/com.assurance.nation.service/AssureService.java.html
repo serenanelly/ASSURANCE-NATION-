@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssureService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">AssureService.java</span></div><h1>AssureService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AssureService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">AssureService.java</span></div><h1>AssureService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
 
 import com.assurance.nation.dto.AssureDTO;
 import com.assurance.nation.dto.AuthDTO;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-<span class="fc" id="L25">@RequiredArgsConstructor</span>
+<span class="nc" id="L25">@RequiredArgsConstructor</span>
 public class AssureService {
 
     private final AssureRepository assureRepository;
@@ -32,14 +32,14 @@ public class AssureService {
 
     @Transactional
     public AssureDTO.AssureResponse register(AssureDTO.RegisterAssureRequest request) {
-<span class="fc" id="L35">        ValidationUtil.validateNSS(request.getNumSecuriteSociale());</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (assureRepository.existsByNumSecuriteSociale(request.getNumSecuriteSociale())) {</span>
+<span class="nc" id="L35">        ValidationUtil.validateNSS(request.getNumSecuriteSociale());</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (assureRepository.existsByNumSecuriteSociale(request.getNumSecuriteSociale())) {</span>
 <span class="nc" id="L37">            throw new DuplicateResourceException(&quot;Numéro de sécurité sociale déjà utilisé&quot;);</span>
         }
-<span class="fc" id="L39">        Assure assure = buildAssure(request);</span>
-<span class="fc" id="L40">        roleAssignmentService.assignRole(assure, RoleName.PATIENT);</span>
-<span class="fc" id="L41">        assure = assureRepository.save(assure);</span>
-<span class="fc" id="L42">        return toResponse(assure);</span>
+<span class="nc" id="L39">        Assure assure = buildAssure(request);</span>
+<span class="nc" id="L40">        roleAssignmentService.assignRole(assure, RoleName.PATIENT);</span>
+<span class="nc" id="L41">        assure = assureRepository.save(assure);</span>
+<span class="nc" id="L42">        return toResponse(assure);</span>
     }
 
     Assure createFromRegister(AuthDTO.RegisterRequest request) {
@@ -69,76 +69,76 @@ public class AssureService {
     }
 
     private Assure buildAssure(AssureDTO.RegisterAssureRequest request) {
-<span class="fc" id="L72">        Assure assure = new Assure();</span>
-<span class="fc" id="L73">        assure.setEmail(request.getEmail());</span>
-<span class="fc" id="L74">        assure.setPasswordHash(passwordEncoder.encode(request.getPassword()));</span>
-<span class="fc" id="L75">        assure.setNom(request.getNom());</span>
-<span class="fc" id="L76">        assure.setPrenom(request.getPrenom());</span>
-<span class="fc" id="L77">        assure.setNumSecuriteSociale(request.getNumSecuriteSociale());</span>
-<span class="fc" id="L78">        assure.setDateAffiliation(request.getDateAffiliation());</span>
-<span class="fc" id="L79">        assure.setEmploi(request.getEmploi());</span>
-<span class="fc" id="L80">        assure.setEstActif(true);</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (request.getMedecinTraitantId() != null) {</span>
+<span class="nc" id="L72">        Assure assure = new Assure();</span>
+<span class="nc" id="L73">        assure.setEmail(request.getEmail());</span>
+<span class="nc" id="L74">        assure.setPasswordHash(passwordEncoder.encode(request.getPassword()));</span>
+<span class="nc" id="L75">        assure.setNom(request.getNom());</span>
+<span class="nc" id="L76">        assure.setPrenom(request.getPrenom());</span>
+<span class="nc" id="L77">        assure.setNumSecuriteSociale(request.getNumSecuriteSociale());</span>
+<span class="nc" id="L78">        assure.setDateAffiliation(request.getDateAffiliation());</span>
+<span class="nc" id="L79">        assure.setEmploi(request.getEmploi());</span>
+<span class="nc" id="L80">        assure.setEstActif(true);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (request.getMedecinTraitantId() != null) {</span>
 <span class="nc" id="L82">            Medecin medecin = medecinService.getEntity(request.getMedecinTraitantId());</span>
 <span class="nc" id="L83">            ValidationUtil.validateMedecinTraitant(medecin);</span>
 <span class="nc" id="L84">            assure.setMedecinTraitant(medecin);</span>
         }
-<span class="fc" id="L86">        return assure;</span>
+<span class="nc" id="L86">        return assure;</span>
     }
 
     @Transactional(readOnly = true)
     public PageDTO&lt;AssureDTO.AssureResponse&gt; findAll(int page, int size, String search, Boolean actif) {
-<span class="fc" id="L91">        PageRequest pageable = PageRequest.of(page, Math.min(size, Constants.MAX_PAGE_SIZE),</span>
-<span class="fc" id="L92">                Sort.by(&quot;nom&quot;, &quot;prenom&quot;));</span>
-<span class="fc" id="L93">        Page&lt;Assure&gt; result = assureRepository.search(</span>
-<span class="pc bpc" id="L94" title="3 of 4 branches missed.">                search != null &amp;&amp; !search.isBlank() ? search : null, actif, pageable);</span>
-<span class="fc" id="L95">        return PageDTO.of(result, result.getContent().stream().map(this::toResponse).toList());</span>
+<span class="nc" id="L91">        PageRequest pageable = PageRequest.of(page, Math.min(size, Constants.MAX_PAGE_SIZE),</span>
+<span class="nc" id="L92">                Sort.by(&quot;nom&quot;, &quot;prenom&quot;));</span>
+<span class="nc" id="L93">        Page&lt;Assure&gt; result = assureRepository.search(</span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">                search != null &amp;&amp; !search.isBlank() ? search : null, actif, pageable);</span>
+<span class="nc" id="L95">        return PageDTO.of(result, result.getContent().stream().map(this::toResponse).toList());</span>
     }
 
     @Transactional(readOnly = true)
     public AssureDTO.AssureResponse findById(UUID id) {
-<span class="fc" id="L100">        Assure assure = assureRepository.findById(id)</span>
-<span class="pc" id="L101">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
-<span class="fc" id="L102">        return toResponse(assure);</span>
+<span class="nc" id="L100">        Assure assure = assureRepository.findById(id)</span>
+<span class="nc" id="L101">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
+<span class="nc" id="L102">        return toResponse(assure);</span>
     }
 
     @Transactional
     public AssureDTO.AssureResponse update(UUID id, AssureDTO.UpdateAssureRequest request) {
-<span class="fc" id="L107">        Assure assure = assureRepository.findById(id)</span>
-<span class="pc" id="L108">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (request.getNom() != null) assure.setNom(request.getNom());</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (request.getPrenom() != null) assure.setPrenom(request.getPrenom());</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (request.getEmploi() != null) assure.setEmploi(request.getEmploi());</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (request.getEstActif() != null) assure.setEstActif(request.getEstActif());</span>
-<span class="fc" id="L113">        assure = assureRepository.save(assure);</span>
-<span class="fc" id="L114">        return toResponse(assure);</span>
+<span class="nc" id="L107">        Assure assure = assureRepository.findById(id)</span>
+<span class="nc" id="L108">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (request.getNom() != null) assure.setNom(request.getNom());</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (request.getPrenom() != null) assure.setPrenom(request.getPrenom());</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (request.getEmploi() != null) assure.setEmploi(request.getEmploi());</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (request.getEstActif() != null) assure.setEstActif(request.getEstActif());</span>
+<span class="nc" id="L113">        assure = assureRepository.save(assure);</span>
+<span class="nc" id="L114">        return toResponse(assure);</span>
     }
 
     @Transactional
     public AssureDTO.AssureResponse updateMedecinTraitant(UUID id, AssureDTO.UpdateMedecinTraitantRequest request) {
-<span class="fc" id="L119">        Assure assure = assureRepository.findById(id)</span>
-<span class="pc" id="L120">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
-<span class="fc" id="L121">        Medecin medecin = medecinService.getEntity(request.getMedecinTraitantId());</span>
-<span class="fc" id="L122">        ValidationUtil.validateMedecinTraitant(medecin);</span>
-<span class="fc" id="L123">        assure.setMedecinTraitant(medecin);</span>
-<span class="fc" id="L124">        assure = assureRepository.save(assure);</span>
-<span class="fc" id="L125">        return toResponse(assure);</span>
+<span class="nc" id="L119">        Assure assure = assureRepository.findById(id)</span>
+<span class="nc" id="L120">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
+<span class="nc" id="L121">        Medecin medecin = medecinService.getEntity(request.getMedecinTraitantId());</span>
+<span class="nc" id="L122">        ValidationUtil.validateMedecinTraitant(medecin);</span>
+<span class="nc" id="L123">        assure.setMedecinTraitant(medecin);</span>
+<span class="nc" id="L124">        assure = assureRepository.save(assure);</span>
+<span class="nc" id="L125">        return toResponse(assure);</span>
     }
 
     @Transactional
     public void delete(UUID id) {
-<span class="fc" id="L130">        Assure assure = assureRepository.findById(id)</span>
-<span class="pc" id="L131">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
-<span class="fc" id="L132">        assure.softDelete();</span>
-<span class="fc" id="L133">        assureRepository.save(assure);</span>
-<span class="fc" id="L134">    }</span>
+<span class="nc" id="L130">        Assure assure = assureRepository.findById(id)</span>
+<span class="nc" id="L131">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable&quot;));</span>
+<span class="nc" id="L132">        assure.softDelete();</span>
+<span class="nc" id="L133">        assureRepository.save(assure);</span>
+<span class="nc" id="L134">    }</span>
 
     @Transactional(readOnly = true)
     public AssureDTO.AssureResponse searchByNSS(String nss) {
-<span class="fc" id="L138">        ValidationUtil.validateNSS(nss);</span>
-<span class="fc" id="L139">        Assure assure = assureRepository.findByNumSecuriteSociale(nss)</span>
-<span class="pc" id="L140">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable pour ce numéro NSS&quot;));</span>
-<span class="fc" id="L141">        return toResponse(assure);</span>
+<span class="nc" id="L138">        ValidationUtil.validateNSS(nss);</span>
+<span class="nc" id="L139">        Assure assure = assureRepository.findByNumSecuriteSociale(nss)</span>
+<span class="nc" id="L140">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Assuré introuvable pour ce numéro NSS&quot;));</span>
+<span class="nc" id="L141">        return toResponse(assure);</span>
     }
 
     @Transactional(readOnly = true)
@@ -148,19 +148,19 @@ public class AssureService {
     }
 
     private AssureDTO.AssureResponse toResponse(Assure a) {
-<span class="fc" id="L151">        AssureDTO.AssureResponse dto = new AssureDTO.AssureResponse();</span>
-<span class="fc" id="L152">        dto.setId(a.getId());</span>
-<span class="fc" id="L153">        dto.setEmail(a.getEmail());</span>
-<span class="fc" id="L154">        dto.setNom(a.getNom());</span>
-<span class="fc" id="L155">        dto.setPrenom(a.getPrenom());</span>
-<span class="fc" id="L156">        dto.setNumSecuriteSociale(a.getNumSecuriteSociale());</span>
-<span class="fc" id="L157">        dto.setDateAffiliation(a.getDateAffiliation());</span>
-<span class="fc" id="L158">        dto.setEmploi(a.getEmploi());</span>
-<span class="fc" id="L159">        dto.setEstActif(a.isEstActif());</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (a.getMedecinTraitant() != null) {</span>
-<span class="fc" id="L161">            dto.setMedecinTraitantId(a.getMedecinTraitant().getId());</span>
+<span class="nc" id="L151">        AssureDTO.AssureResponse dto = new AssureDTO.AssureResponse();</span>
+<span class="nc" id="L152">        dto.setId(a.getId());</span>
+<span class="nc" id="L153">        dto.setEmail(a.getEmail());</span>
+<span class="nc" id="L154">        dto.setNom(a.getNom());</span>
+<span class="nc" id="L155">        dto.setPrenom(a.getPrenom());</span>
+<span class="nc" id="L156">        dto.setNumSecuriteSociale(a.getNumSecuriteSociale());</span>
+<span class="nc" id="L157">        dto.setDateAffiliation(a.getDateAffiliation());</span>
+<span class="nc" id="L158">        dto.setEmploi(a.getEmploi());</span>
+<span class="nc" id="L159">        dto.setEstActif(a.isEstActif());</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (a.getMedecinTraitant() != null) {</span>
+<span class="nc" id="L161">            dto.setMedecinTraitantId(a.getMedecinTraitant().getId());</span>
         }
-<span class="fc" id="L163">        return dto;</span>
+<span class="nc" id="L163">        return dto;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

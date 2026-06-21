@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ASSURANCE NATION</a> &gt; <a href="index.source.html" class="el_package">com.assurance.nation.service</a> &gt; <span class="el_source">UserService.java</span></div><h1>UserService.java</h1><pre class="source lang-java linenums">package com.assurance.nation.service;
 
 import com.assurance.nation.dto.UserDTO;
 import com.assurance.nation.entity.User;
@@ -26,7 +26,7 @@ import java.util.UUID;
  * Gestion des comptes utilisateurs (CRUD, mot de passe, soft delete).
  */
 @Service
-<span class="fc" id="L29">@RequiredArgsConstructor</span>
+<span class="nc" id="L29">@RequiredArgsConstructor</span>
 public class UserService {
 
     private final UserRepository userRepository;
@@ -37,81 +37,81 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserDTO.PageResponse&lt;UserDTO.UserResponse&gt; findAll(int page, int size) {
-<span class="fc" id="L40">        Pageable pageable = PageRequest.of(page, Math.min(size, 100));</span>
-<span class="fc" id="L41">        Page&lt;User&gt; users = userRepository.findAll(pageable);</span>
-<span class="fc" id="L42">        List&lt;UserDTO.UserResponse&gt; content = users.getContent().stream().map(userMapper::toResponse).toList();</span>
-<span class="fc" id="L43">        UserDTO.PageResponse&lt;UserDTO.UserResponse&gt; response = new UserDTO.PageResponse&lt;&gt;();</span>
-<span class="fc" id="L44">        response.setContent(content);</span>
-<span class="fc" id="L45">        response.setPage(users.getNumber());</span>
-<span class="fc" id="L46">        response.setSize(users.getSize());</span>
-<span class="fc" id="L47">        response.setTotalElements(users.getTotalElements());</span>
-<span class="fc" id="L48">        response.setTotalPages(users.getTotalPages());</span>
-<span class="fc" id="L49">        return response;</span>
+<span class="nc" id="L40">        Pageable pageable = PageRequest.of(page, Math.min(size, 100));</span>
+<span class="nc" id="L41">        Page&lt;User&gt; users = userRepository.findAll(pageable);</span>
+<span class="nc" id="L42">        List&lt;UserDTO.UserResponse&gt; content = users.getContent().stream().map(userMapper::toResponse).toList();</span>
+<span class="nc" id="L43">        UserDTO.PageResponse&lt;UserDTO.UserResponse&gt; response = new UserDTO.PageResponse&lt;&gt;();</span>
+<span class="nc" id="L44">        response.setContent(content);</span>
+<span class="nc" id="L45">        response.setPage(users.getNumber());</span>
+<span class="nc" id="L46">        response.setSize(users.getSize());</span>
+<span class="nc" id="L47">        response.setTotalElements(users.getTotalElements());</span>
+<span class="nc" id="L48">        response.setTotalPages(users.getTotalPages());</span>
+<span class="nc" id="L49">        return response;</span>
     }
 
     @Transactional(readOnly = true)
     public UserDTO.UserResponse findById(UUID id) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (!ownershipService.canAccessUser(id)) {</span>
-<span class="fc" id="L55">            throw new com.assurance.nation.exception.UnauthorizedException(&quot;Accès refusé&quot;);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (!ownershipService.canAccessUser(id)) {</span>
+<span class="nc" id="L55">            throw new com.assurance.nation.exception.UnauthorizedException(&quot;Accès refusé&quot;);</span>
         }
-<span class="fc" id="L57">        User user = userRepository.findById(id)</span>
-<span class="pc" id="L58">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
-<span class="fc" id="L59">        return userMapper.toResponse(user);</span>
+<span class="nc" id="L57">        User user = userRepository.findById(id)</span>
+<span class="nc" id="L58">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="nc" id="L59">        return userMapper.toResponse(user);</span>
     }
 
     @Transactional
     public UserDTO.UserResponse update(UUID id, UserDTO.UpdateUserRequest request, String ip) {
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (!ownershipService.canModifyUser(id)) {</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (!ownershipService.canModifyUser(id)) {</span>
 <span class="nc" id="L65">            throw new com.assurance.nation.exception.UnauthorizedException(&quot;Modification non autorisée&quot;);</span>
         }
-<span class="fc" id="L67">        User user = userRepository.findById(id)</span>
-<span class="pc" id="L68">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
-<span class="fc" id="L69">        UserDTO.UserResponse old = userMapper.toResponse(user);</span>
-<span class="pc bpc" id="L70" title="2 of 4 branches missed.">        if (request.getEmail() != null &amp;&amp; !request.getEmail().equals(user.getEmail())) {</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            if (userRepository.existsByEmail(request.getEmail())) {</span>
+<span class="nc" id="L67">        User user = userRepository.findById(id)</span>
+<span class="nc" id="L68">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="nc" id="L69">        UserDTO.UserResponse old = userMapper.toResponse(user);</span>
+<span class="nc bnc" id="L70" title="All 4 branches missed.">        if (request.getEmail() != null &amp;&amp; !request.getEmail().equals(user.getEmail())) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (userRepository.existsByEmail(request.getEmail())) {</span>
 <span class="nc" id="L72">                throw new DuplicateResourceException(&quot;Email déjà utilisé&quot;);</span>
             }
-<span class="fc" id="L74">            user.setEmail(request.getEmail());</span>
+<span class="nc" id="L74">            user.setEmail(request.getEmail());</span>
         }
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (request.getNom() != null) user.setNom(request.getNom());</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (request.getPrenom() != null) user.setPrenom(request.getPrenom());</span>
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if (request.getDateNaissance() != null) user.setDateNaissance(request.getDateNaissance());</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (request.getLieuNaissance() != null) user.setLieuNaissance(request.getLieuNaissance());</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (request.getAdresse() != null) user.setAdresse(request.getAdresse());</span>
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (request.getTelephone() != null) user.setTelephone(request.getTelephone());</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">        if (request.getSexe() != null) user.setSexe(request.getSexe());</span>
-<span class="fc" id="L83">        user = userRepository.save(user);</span>
-<span class="fc" id="L84">        auditService.log(&quot;User&quot;, id.toString(), AuditAction.UPDATE,</span>
-<span class="fc" id="L85">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), old, userMapper.toResponse(user), ip);</span>
-<span class="fc" id="L86">        return userMapper.toResponse(user);</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (request.getNom() != null) user.setNom(request.getNom());</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (request.getPrenom() != null) user.setPrenom(request.getPrenom());</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (request.getDateNaissance() != null) user.setDateNaissance(request.getDateNaissance());</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (request.getLieuNaissance() != null) user.setLieuNaissance(request.getLieuNaissance());</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (request.getAdresse() != null) user.setAdresse(request.getAdresse());</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (request.getTelephone() != null) user.setTelephone(request.getTelephone());</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (request.getSexe() != null) user.setSexe(request.getSexe());</span>
+<span class="nc" id="L83">        user = userRepository.save(user);</span>
+<span class="nc" id="L84">        auditService.log(&quot;User&quot;, id.toString(), AuditAction.UPDATE,</span>
+<span class="nc" id="L85">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), old, userMapper.toResponse(user), ip);</span>
+<span class="nc" id="L86">        return userMapper.toResponse(user);</span>
     }
 
     @Transactional
     public void changePassword(UUID id, UserDTO.ChangePasswordRequest request) {
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        if (!ownershipService.canModifyUser(id)) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (!ownershipService.canModifyUser(id)) {</span>
 <span class="nc" id="L92">            throw new com.assurance.nation.exception.UnauthorizedException(&quot;Modification non autorisée&quot;);</span>
         }
-<span class="fc" id="L94">        ValidationUtil.validatePasswordMatch(request.getNewPassword(), request.getConfirmPassword());</span>
-<span class="fc" id="L95">        User user = userRepository.findById(id)</span>
-<span class="pc" id="L96">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
-<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {</span>
+<span class="nc" id="L94">        ValidationUtil.validatePasswordMatch(request.getNewPassword(), request.getConfirmPassword());</span>
+<span class="nc" id="L95">        User user = userRepository.findById(id)</span>
+<span class="nc" id="L96">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {</span>
 <span class="nc" id="L98">            throw new ValidationException(&quot;Mot de passe actuel incorrect&quot;);</span>
         }
-<span class="fc" id="L100">        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));</span>
-<span class="fc" id="L101">        userRepository.save(user);</span>
-<span class="fc" id="L102">    }</span>
+<span class="nc" id="L100">        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));</span>
+<span class="nc" id="L101">        userRepository.save(user);</span>
+<span class="nc" id="L102">    }</span>
 
     @Transactional
     public void softDelete(UUID id, String ip) {
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (!ownershipService.canDeleteUser(id)) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (!ownershipService.canDeleteUser(id)) {</span>
 <span class="nc" id="L107">            throw new com.assurance.nation.exception.UnauthorizedException(&quot;Suppression non autorisée&quot;);</span>
         }
-<span class="fc" id="L109">        User user = userRepository.findById(id)</span>
-<span class="pc" id="L110">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
-<span class="fc" id="L111">        user.softDelete();</span>
-<span class="fc" id="L112">        userRepository.save(user);</span>
-<span class="fc" id="L113">        auditService.log(&quot;User&quot;, id.toString(), AuditAction.DELETE,</span>
-<span class="fc" id="L114">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), userMapper.toResponse(user), null, ip);</span>
-<span class="fc" id="L115">    }</span>
+<span class="nc" id="L109">        User user = userRepository.findById(id)</span>
+<span class="nc" id="L110">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;Utilisateur introuvable&quot;));</span>
+<span class="nc" id="L111">        user.softDelete();</span>
+<span class="nc" id="L112">        userRepository.save(user);</span>
+<span class="nc" id="L113">        auditService.log(&quot;User&quot;, id.toString(), AuditAction.DELETE,</span>
+<span class="nc" id="L114">                auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), userMapper.toResponse(user), null, ip);</span>
+<span class="nc" id="L115">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
