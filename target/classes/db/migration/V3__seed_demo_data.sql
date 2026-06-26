@@ -66,10 +66,10 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r
 WHERE u.email IN ('medecin.demo@assurance-nation.local', 'specialiste.demo@assurance-nation.local')
-  AND r.name = 'MEDECIN'
+  AND r.role_name = 'MEDECIN'
 ON CONFLICT DO NOTHING;
 
 INSERT INTO user_roles (user_id, role_id)
 SELECT u.id, r.id FROM users u, roles r
-WHERE u.email LIKE 'patient%.demo@assurance-nation.local' AND r.name = 'PATIENT'
+WHERE u.email LIKE 'patient%.demo@assurance-nation.local' AND r.role_name = 'PATIENT'
 ON CONFLICT DO NOTHING;

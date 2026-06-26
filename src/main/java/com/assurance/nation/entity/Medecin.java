@@ -24,6 +24,10 @@ public class Medecin extends User {
     @Column(nullable = false, length = 20)
     private Specialite specialite;
 
+    /** Libellé libre de la spécialité (ex. "Cardiologie") — renseigné pour les spécialistes. */
+    @Column(name = "specialite_libelle", length = 150)
+    private String specialiteLibelle;
+
     @Column(name = "est_assure")
     private boolean estAssure;
 

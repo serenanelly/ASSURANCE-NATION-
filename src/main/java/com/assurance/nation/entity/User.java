@@ -61,6 +61,10 @@ public abstract class User extends BaseAuditableEntity {
     @Column(name = "user_type", insertable = false, updatable = false, length = 20)
     private UserType userType;
 
+    /** Photo de profil (data URL base64 ou URL). */
+    @Column(name = "photo_url", columnDefinition = "TEXT")
+    private String photoUrl;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

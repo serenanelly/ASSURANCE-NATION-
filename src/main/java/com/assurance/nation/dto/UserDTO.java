@@ -30,6 +30,7 @@ public class UserDTO {
         private Sexe sexe;
         private UserType userType;
         private Set<String> roles;
+        private String photoUrl;
         private LocalDateTime createdAt;
     }
 
@@ -44,6 +45,7 @@ public class UserDTO {
         private String adresse;
         private String telephone;
         private Sexe sexe;
+        private String photoUrl;
     }
 
     @Data

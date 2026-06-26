@@ -19,8 +19,10 @@ public class MedecinDTO {
         @NotBlank private String prenom;
         @NotBlank private String numeroRPPS;
         @NotNull private Specialite specialite;
+        private String specialiteLibelle;
         private String telephone;
         private boolean estAssure;
+        private String photoUrl;
     }
 
     @Data
@@ -29,7 +31,9 @@ public class MedecinDTO {
         private String prenom;
         private String telephone;
         private Specialite specialite;
+        private String specialiteLibelle;
         private Boolean estAssure;
+        private String photoUrl;
     }
 
     @Data
@@ -40,6 +44,8 @@ public class MedecinDTO {
         private String prenom;
         private String numeroRPPS;
         private Specialite specialite;
+        private String specialiteLibelle;
         private boolean estAssure;
+        private String photoUrl;
     }
 }

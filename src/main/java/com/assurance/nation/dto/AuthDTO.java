@@ -35,9 +35,11 @@ public class AuthDTO {
         @NotNull private UserType userType;
         private String numeroRPPS;
         private Specialite specialite;
+        private String specialiteLibelle;
         private String numSecuriteSociale;
         private LocalDate dateAffiliation;
         private String emploi;
+        private String photoUrl;
     }
 
     @Data

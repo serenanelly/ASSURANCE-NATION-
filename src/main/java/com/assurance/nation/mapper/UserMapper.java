@@ -22,6 +22,7 @@ public class UserMapper {
         dto.setTelephone(user.getTelephone());
         dto.setSexe(user.getSexe());
         dto.setUserType(user.getUserType());
+        dto.setPhotoUrl(user.getPhotoUrl());
         dto.setCreatedAt(user.getCreatedAt());
         if (user.getRoles() != null) {
             dto.setRoles(user.getRoles().stream()

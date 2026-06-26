@@ -64,6 +64,7 @@ public class AssureService {
         assure.setDateAffiliation(request.getDateAffiliation());
         assure.setEmploi(request.getEmploi());
         assure.setEstActif(true);
+        assure.setPhotoUrl(request.getPhotoUrl());
         roleAssignmentService.assignRole(assure, RoleName.PATIENT);
         return assure;
     }
@@ -78,6 +79,7 @@ public class AssureService {
         assure.setDateAffiliation(request.getDateAffiliation());
         assure.setEmploi(request.getEmploi());
         assure.setEstActif(true);
+        assure.setPhotoUrl(request.getPhotoUrl());
         if (request.getMedecinTraitantId() != null) {
             Medecin medecin = medecinService.getEntity(request.getMedecinTraitantId());
             ValidationUtil.validateMedecinTraitant(medecin);
@@ -110,6 +112,7 @@ public class AssureService {
         if (request.getPrenom() != null) assure.setPrenom(request.getPrenom());
         if (request.getEmploi() != null) assure.setEmploi(request.getEmploi());
         if (request.getEstActif() != null) assure.setEstActif(request.getEstActif());
+        if (request.getPhotoUrl() != null) assure.setPhotoUrl(request.getPhotoUrl());
         assure = assureRepository.save(assure);
         return toResponse(assure);
     }
@@ -157,6 +160,7 @@ public class AssureService {
         dto.setDateAffiliation(a.getDateAffiliation());
         dto.setEmploi(a.getEmploi());
         dto.setEstActif(a.isEstActif());
+        dto.setPhotoUrl(a.getPhotoUrl());
         if (a.getMedecinTraitant() != null) {
             dto.setMedecinTraitantId(a.getMedecinTraitant().getId());
         }

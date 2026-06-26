@@ -1,7 +1,8 @@
-# Profil local : H2 en mémoire, sans PostgreSQL (idéal pour Swagger / dev rapide)
+# Profil local : H2 sur fichier (données persistées entre les redémarrages), sans PostgreSQL.
+# Le fichier est créé dans ./data/assurance_nation.mv.db (relatif au dossier du backend).
 spring:
   datasource:
-    url: jdbc:h2:mem:assurance_nation;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE
+    url: jdbc:h2:file:./data/assurance_nation;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;AUTO_SERVER=TRUE
     username: sa
     password:
     driver-class-name: org.h2.Driver

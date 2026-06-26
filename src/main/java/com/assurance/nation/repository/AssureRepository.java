@@ -18,9 +18,9 @@ public interface AssureRepository extends JpaRepository<Assure, UUID> {
 
     @Query("""
             SELECT a FROM Assure a
-            WHERE (:search IS NULL OR LOWER(a.nom) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR LOWER(a.prenom) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR a.numSecuriteSociale LIKE CONCAT('%', :search, '%'))
+            WHERE (:search IS NULL OR LOWER(a.nom) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(a.prenom) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR a.numSecuriteSociale LIKE CONCAT('%', CAST(:search AS string), '%'))
             AND (:actif IS NULL OR a.estActif = :actif)
             """)
     Page<Assure> search(@Param("search") String search, @Param("actif") Boolean actif, Pageable pageable);

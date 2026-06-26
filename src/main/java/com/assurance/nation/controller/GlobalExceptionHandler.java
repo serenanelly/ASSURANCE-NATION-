@@ -3,8 +3,10 @@ package com.assurance.nation.controller;
 import com.assurance.nation.dto.ErrorDTO;
 import com.assurance.nation.exception.ApiException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -41,6 +43,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDTO> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(buildError(HttpStatus.FORBIDDEN, "Forbidden", ex.getMessage(), request.getRequestURI(), null));
+    }
+
+    /** Violation de contrainte d'unicité en base (ex. email ou identifiant déjà utilisé). */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorDTO> handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildError(HttpStatus.CONFLICT, "Conflict",
+                        "Cette ressource existe déjà (email ou identifiant en double).",
+                        request.getRequestURI(), null));
+    }
+
+    /** Corps de requête illisible (ex. valeur d'énumération invalide ou JSON mal formé). */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDTO> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+        return ResponseEntity.badRequest()
+                .body(buildError(HttpStatus.BAD_REQUEST, "Bad Request",
+                        "Requête invalide : valeur de champ ou format incorrect.",
+                        request.getRequestURI(), null));
     }
 
     @ExceptionHandler(Exception.class)

@@ -80,6 +80,7 @@ public class UserService {
         if (request.getAdresse() != null) user.setAdresse(request.getAdresse());
         if (request.getTelephone() != null) user.setTelephone(request.getTelephone());
         if (request.getSexe() != null) user.setSexe(request.getSexe());
+        if (request.getPhotoUrl() != null) user.setPhotoUrl(request.getPhotoUrl());
         user = userRepository.save(user);
         auditService.log("User", id.toString(), AuditAction.UPDATE,
                 auditService.findActorByEmail(SecurityUtil.getCurrentUserEmail()), old, userMapper.toResponse(user), ip);

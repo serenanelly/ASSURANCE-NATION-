@@ -21,6 +21,7 @@ public class AssureDTO {
         private LocalDate dateAffiliation;
         private String emploi;
         private UUID medecinTraitantId;
+        private String photoUrl;
     }
 
     @Data
@@ -29,6 +30,7 @@ public class AssureDTO {
         private String prenom;
         private String emploi;
         private Boolean estActif;
+        private String photoUrl;
     }
 
     @Data
@@ -42,6 +44,7 @@ public class AssureDTO {
         private String emploi;
         private UUID medecinTraitantId;
         private boolean estActif;
+        private String photoUrl;
     }
 
     @Data

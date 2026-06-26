@@ -19,9 +19,9 @@ public interface MedecinRepository extends JpaRepository<Medecin, UUID> {
 
     @Query("""
             SELECT m FROM Medecin m
-            WHERE (:search IS NULL OR LOWER(m.nom) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR LOWER(m.prenom) LIKE LOWER(CONCAT('%', :search, '%'))
-                OR m.numeroRPPS LIKE CONCAT('%', :search, '%'))
+            WHERE (:search IS NULL OR LOWER(m.nom) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR LOWER(m.prenom) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))
+                OR m.numeroRPPS LIKE CONCAT('%', CAST(:search AS string), '%'))
             AND (:specialite IS NULL OR m.specialite = :specialite)
             """)
     Page<Medecin> search(@Param("search") String search, @Param("specialite") Specialite specialite, Pageable pageable);

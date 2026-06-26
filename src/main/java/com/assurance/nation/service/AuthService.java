@@ -71,6 +71,7 @@ public class AuthService {
         user.setTelephone(request.getTelephone());
         user.setSexe(request.getSexe());
         user.setUserType(request.getUserType());
+        user.setPhotoUrl(request.getPhotoUrl());
     }
 
     @Transactional

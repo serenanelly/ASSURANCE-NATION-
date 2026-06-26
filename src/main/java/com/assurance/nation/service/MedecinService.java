@@ -42,8 +42,10 @@ public class MedecinService {
         medecin.setPrenom(request.getPrenom());
         medecin.setNumeroRPPS(request.getNumeroRPPS());
         medecin.setSpecialite(request.getSpecialite());
+        medecin.setSpecialiteLibelle(request.getSpecialiteLibelle());
         medecin.setEstAssure(request.isEstAssure());
         medecin.setTelephone(request.getTelephone());
+        medecin.setPhotoUrl(request.getPhotoUrl());
         roleAssignmentService.assignRole(medecin, RoleName.MEDECIN);
         medecin = medecinRepository.save(medecin);
         return toResponse(medecin);
@@ -69,6 +71,8 @@ public class MedecinService {
         medecin.setSexe(request.getSexe());
         medecin.setNumeroRPPS(request.getNumeroRPPS());
         medecin.setSpecialite(request.getSpecialite());
+        medecin.setSpecialiteLibelle(request.getSpecialiteLibelle());
+        medecin.setPhotoUrl(request.getPhotoUrl());
         roleAssignmentService.assignRole(medecin, RoleName.MEDECIN);
         return medecin;
     }
@@ -96,6 +100,8 @@ public class MedecinService {
         if (request.getPrenom() != null) medecin.setPrenom(request.getPrenom());
         if (request.getTelephone() != null) medecin.setTelephone(request.getTelephone());
         if (request.getSpecialite() != null) medecin.setSpecialite(request.getSpecialite());
+        if (request.getSpecialiteLibelle() != null) medecin.setSpecialiteLibelle(request.getSpecialiteLibelle());
+        if (request.getPhotoUrl() != null) medecin.setPhotoUrl(request.getPhotoUrl());
         if (request.getEstAssure() != null) medecin.setEstAssure(request.getEstAssure());
         medecin = medecinRepository.save(medecin);
         return toResponse(medecin);
@@ -130,7 +136,9 @@ public class MedecinService {
         dto.setPrenom(m.getPrenom());
         dto.setNumeroRPPS(m.getNumeroRPPS());
         dto.setSpecialite(m.getSpecialite());
+        dto.setSpecialiteLibelle(m.getSpecialiteLibelle());
         dto.setEstAssure(m.isEstAssure());
+        dto.setPhotoUrl(m.getPhotoUrl());
         return dto;
     }
 }
